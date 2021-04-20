@@ -1,6 +1,6 @@
 # Grant Negotiation and Authorization Protocol
 
-![Latest Draft](https://img.shields.io/endpoint?url=https://a15hpmw3nd.execute-api.us-east-1.amazonaws.com/dev/draft_latest/draft-ietf-gnap-core-protocol)
+![Latest Draft](https://img.shields.io/endpoint?url=https://a15hpmw3nd.execute-api.us-east-1.amazonaws.com/dev/draft_latest/draft-ietf-gnap-resource-servers)
 
 This repository contains the resource server facing specification of the
 [Grant Negotiation and Authorization Protocol (GNAP) working group](https://datatracker.ietf.org/wg/gnap/about/)
