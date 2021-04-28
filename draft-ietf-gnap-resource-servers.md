@@ -1,6 +1,6 @@
 ---
 title: 'Grant Negotiation and Authorization Protocol Resource Server Connections'
-docname: draft-ietf-gnap-resource-servers-latest
+docname: draft-ietf-gnap-resource-servers-00
 category: std
 
 ipr: trust200902
@@ -44,40 +44,9 @@ normative:
          -
            ins: P. Saint-Andre
     RFC2119:
-    RFC3230:
-    RFC3986:
-    RFC5646:
-    RFC7234:
-    RFC7468:
-    RFC7515:
-    RFC7517:
-    RFC6749:
-    RFC6750:
-    RFC7797:
     RFC8174:
     RFC8259:
-    RFC8705:
-    RFC8693:
     I-D.ietf-gnap-core-protocol:
-    I-D.ietf-httpbis-message-signatures:
-    I-D.ietf-oauth-signed-http-request:
-    I-D.ietf-oauth-dpop:
-    I-D.ietf-secevent-subject-identifiers:
-    OIDC:
-      title: OpenID Connect Core 1.0 incorporating errata set 1
-      target: https://openid.net/specs/openiD-connect-core-1_0.html
-      date: November 8, 2014
-      author:
-        -
-          ins: N. Sakimura
-        -
-          ins: J. Bradley
-        -
-          ins: M. Jones
-        -
-          ins: B. de Medeiros
-        -
-          ins: C. Mortimore
 
 --- abstract
 
@@ -122,6 +91,8 @@ GNAP core protocol specification {{I-D.ietf-gnap-core-protocol}}.
 
 {::boilerplate bcp14}
 
+This document contains non-normative examples of partial and complete HTTP messages, JSON structures, URLs, query components, keys, and other elements. Some examples use a single trailing backslash '\' to indicate line wrapping for long values, as per {{!RFC8792}}. The `\` character and leading spaces on wrapped lines are not part of the value.
+
 # Access Token Formats {#structure}
 
 When the AS issues an access token for use at an RS, the RS
@@ -155,7 +126,7 @@ pieces.
 A GNAP AS offering RS-facing services can publish its features on
 a well-known discovery document using the URL `.well-known/gnap-as-rs`.
 
-This endpoint contains a JSON document consisting of a single JSON
+This endpoint contains a JSON document {{RFC8259}} consisting of a single JSON
 object with any combination of the following optional fields:
 
 introspection_endpoint:
@@ -440,7 +411,8 @@ has been pre-configured to represent what the RS is protecting. The
 content of this handle is opaque to the RS and the client instance in both cases.
 
 ~~~
-WWW-Authenticate: GNAP as_uri=https://server.example/tx,access=FWWIKYBQ6U56NL1
+WWW-Authenticate: \
+  GNAP as_uri=https://server.example/tx,access=FWWIKYBQ6U56NL1
 ~~~
 
 The client instance then makes a call to the "as_uri" as described in 
