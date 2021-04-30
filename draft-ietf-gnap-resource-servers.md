@@ -1,6 +1,6 @@
 ---
 title: 'Grant Negotiation and Authorization Protocol Resource Server Connections'
-docname: draft-ietf-gnap-resource-servers-00
+docname: draft-ietf-gnap-resource-servers-latest
 category: std
 
 ipr: trust200902
@@ -471,6 +471,9 @@ derive information about the resources being protected without releasing the res
 --- back
    
 # Document History {#history}
+
+- Since -00
+    - 
 
 - -00 
     - Extracted resource server section.
