@@ -68,7 +68,7 @@ common storage, obviating the need for any connecting protocol. However,
 it is often desirable to have the RS and AS communicate at runtime
 for a variety of purposes, including allowing the RS to validate and
 understand the rights and privileges associated with a grant of 
-access represented by an access token issued by (AS), or negotiating
+access represented by an access token issued by the AS, or negotiating
 the capabilities of either party. These types of 
 connections are particularly useful for connecting an AS and RS from
 different vendors, allowing interoperable distributed deployments
@@ -186,7 +186,7 @@ endpoint at the AS to get token information.
     The RS signs the request with its own key (not the client instance's
     key or the token's key).
 
-3. The AS validates the access token value and the client instance's request
+3. The AS validates the access token value and the Resource Server's request
     and returns the introspection response for the token.
 
 4. The RS fulfills the request from the client instance.
@@ -309,7 +309,7 @@ request, the RS is not capable of referencing or modifying the existing grant. A
 the RS needs to request or generate a new token access token for its use at the secondary RS.
 This internal secondary token is issued in the context of the incoming access token.
 
-While it is possible to use a [token format]{#structure} that allows for the
+While it is possible to use a [token format](#structure) that allows for the
 RS to generate its own secondary token,
 the AS can allow the RS to request this secondary access token using the same
 process used by the original client instance to request the primary access token. Since the
