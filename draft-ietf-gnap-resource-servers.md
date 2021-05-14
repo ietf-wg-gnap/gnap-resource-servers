@@ -292,7 +292,7 @@ Cache-Control: no-store
 
 
 The RS MAY make this handle available as part of a 
-[response](#rs-request-without-token) or as
+discovery response as described in {{I-D.ietf-gnap-core-protocol}} or as
 documentation to developers.
 
 \[\[ [See issue #117](https://github.com/ietf-wg-gnap/gnap-core-protocol/issues/117) \]\]
