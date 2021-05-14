@@ -78,9 +78,7 @@ This specification defines several means for a RS and AS to
 communicate these aspects with each other, including structured
 access tokens and RS-facing APIs. This specification also discusses
 methods for an RS to derive a downstream token for calling another
-chained RS as well as a client-facing discovery mechanism that can
-be used to bootstrap the GNAP process when the client instance does
-not know which AS protects a given RS.
+chained RS.
 
 The means of the authorization server issuing
 the access token to the client instance and the means of the client instance
@@ -395,51 +393,6 @@ The AS responds with a token for the downstream RS2 as described in
 repeat this process as necessary for calling further RS's.
 
 
-# Requesting Resources With Insufficient Access {#rs-request-without-token}
-
-If the client instance calls an RS without an access token, or with an
-invalid access token, the RS MAY respond to the client instance with an
-authentication header indicating that GNAP needs to be used
-to access the resource. The address of the GNAP
-endpoint MUST be sent in the "as_uri" parameter. The RS MAY
-additionally return a resource reference that the client instance MAY use in
-its access token request. This
-resource reference handle SHOULD be sufficient for at least the action
-the client instance was attempting to take at the RS. The RS MAY use the 
-[dynamic resource handle request](#rs-register-resource-handle) to register a new resource handle, or use a handle that
-has been pre-configured to represent what the RS is protecting. The
-content of this handle is opaque to the RS and the client instance in both cases.
-
-~~~
-WWW-Authenticate: \
-  GNAP as_uri=https://server.example/tx,access=FWWIKYBQ6U56NL1
-~~~
-
-The client instance then makes a call to the "as_uri" as described in 
-{{I-D.ietf-gnap-core-protocol}}, with the value of "access" as one of the members
-of the `access` array in the `access_token` portion of the request. The
-client instance MAY request additional resources and other information, and MAY
-request multiple access tokens.
-
-~~~
-POST /tx HTTP/1.1
-Host: server.example.com
-Content-Type: application/json
-Detached-JWS: ejy0...
-
-{
-    "access_token": {
-        "access": [
-            "FWWIKYBQ6U56NL1",
-            "dolphin-metadata"
-        ]
-    },
-    "client": "KHRS6X63AJ7C7C4AZ9AO"
-}
-~~~
-
-\[\[ [See issue #118](https://github.com/ietf-wg-gnap/gnap-core-protocol/issues/118) \]\]
-
 # Acknowledgements {#Acknowledgements}
 
 (TODO: the ACK section should probably be split between the documents)
@@ -473,7 +426,7 @@ derive information about the resources being protected without releasing the res
 # Document History {#history}
 
 - Since -00
-    - 
+    - Moved client-facing RS response back to GNAP core document.
 
 - -00 
     - Extracted resource server section.
