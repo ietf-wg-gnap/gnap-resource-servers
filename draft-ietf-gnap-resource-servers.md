@@ -91,6 +91,8 @@ GNAP core protocol specification {{I-D.ietf-gnap-core-protocol}}.
 
 This document contains non-normative examples of partial and complete HTTP messages, JSON structures, URLs, query components, keys, and other elements. Some examples use a single trailing backslash '\' to indicate line wrapping for long values, as per {{!RFC8792}}. The `\` character and leading spaces on wrapped lines are not part of the value.
 
+Terminology specific to GNAP is defined in the terminology section of the core specification {{I-D.ietf-gnap-core-protocol}}.
+
 # Access Token Formats {#structure}
 
 When the AS issues an access token for use at an RS, the RS
