@@ -236,19 +236,40 @@ Cache-Control: no-store
 }
 ~~~
 
-## Registering a Resource Handle {#rs-register-resource-handle}
+## Registering a Resource Set {#rs-register-resource-handle}
 
 If the RS needs to, it can post a set of resources as described in the Resource Access Rights section of 
-{{I-D.ietf-gnap-core-protocol}} to the AS's resource registration endpoint.
+{{I-D.ietf-gnap-core-protocol}} to the AS's resource registration endpoint along with information about
+what the RS will need to validate the request.
+
+access (array of objects/strings):
+: REQUIRED. The list of access rights associated with the request in the format described
+    in the "Resource Access Rights" section of {{I-D.ietf-gnap-core-protocol}}.
+
+resource_server (string or object):
+: REQUIRED. The identification used to authenticate the resource server making this call, either
+    by value or by reference as described in {{authentication}}.
+
+token_format_required (string):
+: OPTIONAL. The token format required to access the identified resource. If the field is omitted,
+    the token format is at the discretion of the AS. If the AS does not support the requested
+    token format, the AS MUST return an error to the RS.
+
+token_introspection_required (boolean):
+: OPTIONAL. If present and set to `true`, the RS expects to make a token introspection request as
+    described in {{introspection}}. If absent or set to `false`, the RS does not anticipate needing
+    to make an introspection request for tokens relating to this resource set.
 
 The RS MUST identify itself with its own key and sign the
-request.
+request. 
 
 ~~~
 POST /resource HTTP/1.1
 Host: server.example.com
 Content-Type: application/json
-Detached-JWS: ejy0...
+Signature-Input: sig1=...
+Signature: sig1=...
+Digest: ...
 
 {
     "access": [
@@ -276,8 +297,23 @@ Detached-JWS: ejy0...
 
 
 
-The AS responds with a handle appropriate to represent the
-resources list that the RS presented.
+The AS responds with a reference appropriate to represent the
+resources list that the RS presented in its request as well as
+any additional information the RS might need in future requests.
+
+resource_reference (string):
+: REQUIRED. A single string representing the list of resources registered in the request. 
+    The RS MAY make this handle available to a client instance as part of a 
+    discovery response as described in {{I-D.ietf-gnap-core-protocol}} or as
+    documentation to client software developers.
+
+instance_id (string):
+: OPTIONAL. An instance identifier that the RS can use to refer to itself in future calls to
+    the AS, in lieu of sending its key by value.
+
+introspection_endpoint (string):
+: OPTIONAL. The introspection endpoint of this AS, used to allow the RS to perform
+    token introspection. {{introspection}}
 
 ~~~
 HTTP/1.1 200 OK
@@ -285,19 +321,9 @@ Content-Type: application/json
 Cache-Control: no-store
 
 {
-    "resource_handle": "FWWIKYBQ6U56NL1"
+    "resource_reference": "FWWIKYBQ6U56NL1"
 }
 ~~~
-
-
-
-The RS MAY make this handle available as part of a 
-discovery response as described in {{I-D.ietf-gnap-core-protocol}} or as
-documentation to developers.
-
-\[\[ [See issue #117](https://github.com/ietf-wg-gnap/gnap-core-protocol/issues/117) \]\]
-
-
 
 # Deriving a downstream token {#token-chaining}
 
@@ -426,6 +452,7 @@ derive information about the resources being protected without releasing the res
 # Document History {#history}
 
 - Since -00
+    - Filled out resource registration protocol.
     - Moved client-facing RS response back to GNAP core document.
 
 - -00 
