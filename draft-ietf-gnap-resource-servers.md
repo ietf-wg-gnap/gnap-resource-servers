@@ -44,6 +44,7 @@ normative:
          -
            ins: P. Saint-Andre
     RFC2119:
+    RFC7519:
     RFC8174:
     RFC8259:
     I-D.ietf-gnap-core-protocol:
@@ -97,16 +98,30 @@ When the AS issues an access token for use at an RS, the RS
 needs to have some means of understanding what the access token is for
 in order to determine how to respond to the request. The core GNAP
 protocol makes no assumptions or demands on the format or contents
-of the access token, but such token formats can be the topic of agreements
+of the access token, and in fact the token format and contents are opaque
+to the client instance. However, such token formats can be the topic of agreements
 between the AS and RS.
 
 Self-contained structured token formats allow for the conveyance
 of information between the AS and RS without requiring the RS to
-call the AS at runtime as described in {{introspection}}. 
+call the AS at runtime as described in {{introspection}}. Structured tokens
+can also be used in combination with introspection, allowing the token itself
+to carry one class of information and the introspection response to carry
+another.
 
 Some token formats, such as Macaroons and Biscuits, allow for
 the RS to derive sub-tokens without having to call the AS
 as described in {{token-chaining}}.
+
+The supported token formats can be communicated dynamically at runtime
+between the AS and RS in several places. 
+
+- The AS can declare its supported token formats as part of RS-facing discovery {{discovery}}
+- The RS can require a specific token format be used to access a registered resource set {{rs-register-resource-handle}}
+- The AS can return the token's format in an introspection response {{introspection}}
+
+In all places where the token format is listed explicitly, it MUST be one of the registered
+values in the GNAP Token Formats Registry {{iana-token-format}}.
 
 # Resource-Server-Facing API
 
@@ -131,7 +146,8 @@ introspection_endpoint:
 : The URL of the endpoint offering introspection. {{introspection}}
 
 token_formats_supported:
-: A list of token formats supported by this AS.
+: A list of token formats supported by this AS. The values in this list
+    MUST be registered in the GNAP Token Format Registry. {{iana-token-format}}
 
 resource_registration_endpoint:
 : The URL of the endpoint offering resource registration. {{rs-register-resource-handle}}
@@ -402,6 +418,25 @@ repeat this process as necessary for calling further RS's.
 \[\[ TBD: There are a lot of items in the document that are expandable
 through the use of value registries. \]\]
 
+## GNAP Token Format Registry {#iana-token-format}
+
+This specification establishes the GNAP Token Format Registry to define token formats.
+
+### Registry Template
+
+### Initial Registry Contents 
+
+The table below contains the initial contents of the GNAP Token Format Registry.
+
+|Name|Status|Description|Reference|
+|--- |--- |--- |--- |
+|`jwt-signed`|Active   | JSON Web Token, signed with JWS | {{RFC7519}} |
+|`jwt-encrypted`|Active   | JSON Web Token, encrypted with JWE | {{RFC7519}} |
+|`macaroon`|Active   | Macaroon |  |
+|`biscuit`|Active   | Biscuit |  |
+|`zcap`|Active   | ZCAP |  |
+{: title="Initial contents of the GNAP Token Format Registry." }
+
 # Security Considerations {#Security}
 
 \[\[ TBD: There are a lot of security considerations to add. \]\]
@@ -426,6 +461,7 @@ derive information about the resources being protected without releasing the res
 # Document History {#history}
 
 - Since -00
+    - Added access token format registry.
     - Moved client-facing RS response back to GNAP core document.
 
 - -00 
