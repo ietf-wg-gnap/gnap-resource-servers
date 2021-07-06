@@ -154,6 +154,11 @@ grant_request_endpoint (string):
     be the same URL used by client instances in support of GNAP requests.
     {{token-chaining}}
 
+key_proofs_supported (array of strings)
+: OPTIONAL. A list of the AS's supported key
+    proofing mechanisms. The values of this list correspond to possible
+    values of the `proof` field of the key section of the request.
+
 ## Protecting RS requests to the AS {#authentication}
 
 Unless otherwise specified, the RS protects its calls to the AS using any of the signature
@@ -441,6 +446,7 @@ derive information about the resources being protected without releasing the res
 # Document History {#history}
 
 - Since -00
+    - Expanded RS-facing discovery mechanisms.
     - Moved client-facing RS response back to GNAP core document.
 
 - -00 
