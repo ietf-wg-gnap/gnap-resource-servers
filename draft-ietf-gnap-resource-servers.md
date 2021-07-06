@@ -141,16 +141,41 @@ grant_endpoint:
 
 ## Protecting RS requests to the AS {#authentication}
 
-Unless otherwise specified, the RS protects its calls to the AS using any of the signature
+Unless otherwise specified, the RS MUST protect its calls to the AS using any of the signature
 methods defined by GNAP. This signing method MUST cover all of the appropriate
 portions of the HTTP request message, including any body elements, tokens, or
 headers required for functionality.
 
+The RS MAY present its keys by reference or by value in
+a similar fashion to a client instance calling the AS in the core protocol
+of GNAP, described in {{I-D.ietf-gnap-core-protocol}}. In the protocols defined here,
+this takes the form of the resource server identifying itself using a `key` field or
+by passing an instance identifier directly.
+
+~~~
+"resource_server": {
+    "key": {
+        "proof": "httpsig",
+        "jwk": {
+            "kty": "EC",
+            "crv": "secp256k1",
+            "kid": "2021-07-06T20:22:03Z",
+            "x": "-J9OJIZj4nmopZbQN7T8xv3sbeS5-f_vBNSy_EHnBZc",
+            "y": "sjrS51pLtu3P4LUTVvyAIxRfDV_be2RYpI5_f-Yjivw"
+        }
+    }
+}
+~~~
+
+or by reference:
+
+~~~
+"resource_server": "7C7C4AZ9KHRS6X63AJAO"
+~~~
+
 The AS MAY require an RS to pre-register its keys
-or could alternatively allow calls from arbitrary keys, in a trust-on-first-use
-model. The RS MAY present its keys by reference or by value in
-the same fashion as a client instance calling the AS in the core protocol
-of GNAP {{I-D.ietf-gnap-core-protocol}}.
+or could allow calls from arbitrary keys in a trust-on-first-use
+model. 
 
 ## Token Introspection {#introspection}
 
@@ -352,9 +377,7 @@ value in the "existing_access_token" field.
 
 Since the RS is acting as a client instance, 
 the RS MUST identify itself with its own key in the `client` field and sign the
-request just as any client instance would.
-
-\[\[ [See issue #116](https://github.com/ietf-wg-gnap/gnap-core-protocol/issues/116) \]\]
+request just as any client instance would, as described in {{authentication}}.
 
 ~~~
 POST /tx HTTP/1.1
@@ -426,6 +449,7 @@ derive information about the resources being protected without releasing the res
 # Document History {#history}
 
 - Since -00
+    - Better described RS authentication.
     - Moved client-facing RS response back to GNAP core document.
 
 - -00 
