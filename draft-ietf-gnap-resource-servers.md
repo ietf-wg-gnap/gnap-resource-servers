@@ -192,6 +192,20 @@ endpoint at the AS to get token information.
 The RS signs the request with its own key and sends the access
 token as the body of the request.
 
+access_token (string):
+: REQUIRED. The access token value presented to the RS by the client instance.
+
+proof (string):
+: RECOMMENDED. The proofing method used by the client instance to bind the token to the RS request.
+
+resource_server (string or object):
+: REQUIRED. The identification used to authenticate the resource server making this call, either
+    by value or by reference as described in {{authentication}}.
+
+access (array of strings/objects):
+: OPTIONAL. The minimum access rights required to fulfill the request. This MUST be in the
+    format described in the Resource Access Rights section of {{I-D.ietf-gnap-core-protocol}}.
+
 ~~~
 POST /introspect HTTP/1.1
 Host: server.example.com
@@ -205,12 +219,27 @@ Detached-JWS: ejy0...
 }
 ~~~
 
-
-
 The AS responds with a data structure describing the token's
 current state and any information the RS would need to validate the
 token's presentation, such as its intended proofing mechanism and key
-material. The response MAY include any fields defined in an access
+material. 
+
+active (boolean):
+: REQUIRED. If `true`, the access token presented is not expired, has
+    not been revoked, and is allowed to be presented to the RS identified in
+    the introspection request.
+
+access (array of strings/objects):
+: REQUIRED. The access rights associated with this access token. This MUST be in the
+    format described in the Resource Access Rights section of {{I-D.ietf-gnap-core-protocol}}.
+    This array MAY be filtered or otherwise limited for consumption by the identified RS.
+
+key (object/string):
+: REQUIRED if the access token is bound. The key bound to the access token, to allow the RS
+    to validate the signature of the request from the client instance. 
+
+
+The response MAY include any additional fields defined in an access
 token response.
 
 ~~~
@@ -426,6 +455,7 @@ derive information about the resources being protected without releasing the res
 # Document History {#history}
 
 - Since -00
+    - Filled out introspection protocol.
     - Moved client-facing RS response back to GNAP core document.
 
 - -00 
