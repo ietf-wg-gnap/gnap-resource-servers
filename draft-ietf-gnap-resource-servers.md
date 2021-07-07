@@ -44,6 +44,7 @@ normative:
          -
            ins: P. Saint-Andre
     RFC2119:
+    RFC3986:
     RFC8174:
     RFC8259:
     I-D.ietf-gnap-core-protocol:
