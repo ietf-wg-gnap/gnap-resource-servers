@@ -274,7 +274,9 @@ access (array of strings/objects):
 POST /introspect HTTP/1.1
 Host: server.example.com
 Content-Type: application/json
-Detached-JWS: ejy0...
+Signature-Input: sig1=...
+Signature: sig1=...
+Digest: sha256=...
 
 {
     "access_token": "OS9M2PMHKUR64TB8N6BW7OZB8CDFONP219RP1LT0",
@@ -579,7 +581,10 @@ derive information about the resources being protected without releasing the res
 
 # Document History {#history}
 
-- Since -00
+- Since -01
+    - 
+
+- -01
     - Better described RS authentication.
     - Added access token format registry.
     - Filled out introspection protocol.
