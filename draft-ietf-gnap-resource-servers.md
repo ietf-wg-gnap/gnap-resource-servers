@@ -215,6 +215,20 @@ endpoint at the AS to get token information.
 The RS signs the request with its own key and sends the access
 token as the body of the request.
 
+access_token (string):
+: REQUIRED. The access token value presented to the RS by the client instance.
+
+proof (string):
+: RECOMMENDED. The proofing method used by the client instance to bind the token to the RS request.
+
+resource_server (string or object):
+: REQUIRED. The identification used to authenticate the resource server making this call, either
+    by value or by reference as described in {{authentication}}.
+
+access (array of strings/objects):
+: OPTIONAL. The minimum access rights required to fulfill the request. This MUST be in the
+    format described in the Resource Access Rights section of {{I-D.ietf-gnap-core-protocol}}.
+
 ~~~
 POST /introspect HTTP/1.1
 Host: server.example.com
@@ -228,13 +242,46 @@ Detached-JWS: ejy0...
 }
 ~~~
 
+The AS MUST validate the access token value and determine if the token is active. An
+active access token is defined as a token that
 
+- was issued by the processing AS,
+- has not been revoked,
+- has not expired, and
+- is appropriate for presentation at the identified RS.
 
 The AS responds with a data structure describing the token's
 current state and any information the RS would need to validate the
 token's presentation, such as its intended proofing mechanism and key
-material. The response MAY include any fields defined in an access
-token response.
+material. 
+
+active (boolean):
+: REQUIRED. If `true`, the access token presented is active,
+    as defined above. If any of the criteria for an active token
+    are not true, or if the AS is unable to make a
+    determination (such as the token is not found), the value is 
+    set to `false` and other fields are omitted.
+
+If the access token is active, additional fields from the single access token
+response structure defined in {{I-D.ietf-gnap-core-protocol}} are included. In
+particular, these include the following:
+
+access (array of strings/objects):
+: REQUIRED. The access rights associated with this access token. This MUST be in the
+    format described in the Resource Access Rights section of {{I-D.ietf-gnap-core-protocol}}.
+    This array MAY be filtered or otherwise limited for consumption by the identified RS, including
+    being an empty array.
+
+key (object/string):
+: REQUIRED if the token is bound. The key bound to the access token, to allow the RS
+    to validate the signature of the request from the client instance. If the access
+    token is a bearer token, this MUST NOT be included.
+
+flags (array of strings):
+: OPTIONAL. The set of flags associated with the access token.
+
+The response MAY include any additional fields defined in an access
+token response and MUST NOT include the access token `value` itself.
 
 ~~~
 HTTP/1.1 200 OK
@@ -475,6 +522,7 @@ derive information about the resources being protected without releasing the res
 # Document History {#history}
 
 - Since -00
+    - Filled out introspection protocol.
     - Filled out resource registration protocol.
     - Expanded RS-facing discovery mechanisms.
     - Moved client-facing RS response back to GNAP core document.
