@@ -44,6 +44,7 @@ normative:
          -
            ins: P. Saint-Andre
     RFC2119:
+    RFC3986:
     RFC8174:
     RFC8259:
     I-D.ietf-gnap-core-protocol:
@@ -124,22 +125,42 @@ pieces.
 ## RS-facing AS Discovery {#discovery}
 
 A GNAP AS offering RS-facing services can publish its features on
-a well-known discovery document using the URL `.well-known/gnap-as-rs`.
+a well-known discovery document using the URL `.well-known/gnap-as-rs` appended
+to the grant request endpoint URL.
 
-This endpoint contains a JSON document {{RFC8259}} consisting of a single JSON
-object with any combination of the following optional fields:
+The discovery response is a JSON document {{RFC8259}} consisting of a single JSON
+object with the following fields:
 
-introspection_endpoint:
-: The URL of the endpoint offering introspection. {{introspection}}
+introspection_endpoint (string):
+: OPTIONAL. The URL of the endpoint offering introspection. 
+    The location MUST be a URL {{RFC3986}}
+    with a scheme component that MUST be https, a host component, and optionally,
+    port, path and query components and no fragment components.
+    {{introspection}}
 
-token_formats_supported:
+token_formats_supported (array of strings):
 : A list of token formats supported by this AS.
 
-resource_registration_endpoint:
-: The URL of the endpoint offering resource registration. {{rs-register-resource-handle}}
+resource_registration_endpoint (string):
+: The URL of the endpoint offering resource registration.
+    The location MUST be a URL {{RFC3986}}
+    with a scheme component that MUST be https, a host component, and optionally,
+    port, path and query components and no fragment components.
+    {{rs-register-resource-handle}}
 
-grant_endpoint:
-: The grant endpoint of the GNAP AS.
+grant_request_endpoint (string):
+: REQUIRED. The location of the AS's grant request endpoint, used by the RS
+    to derive downstream access tokens.
+    The location MUST be a URL {{RFC3986}}
+    with a scheme component that MUST be https, a host component, and optionally,
+    port, path and query components and no fragment components. This URL MUST
+    be the same URL used by client instances in support of GNAP requests.
+    {{token-chaining}}
+
+key_proofs_supported (array of strings)
+: OPTIONAL. A list of the AS's supported key
+    proofing mechanisms. The values of this list correspond to possible
+    values of the `proof` field of the key section of the request.
 
 ## Protecting RS requests to the AS {#authentication}
 
@@ -428,6 +449,7 @@ derive information about the resources being protected without releasing the res
 # Document History {#history}
 
 - Since -00
+    - Expanded RS-facing discovery mechanisms.
     - Moved client-facing RS response back to GNAP core document.
 
 - -00 
