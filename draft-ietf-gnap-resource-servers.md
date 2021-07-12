@@ -44,6 +44,7 @@ normative:
          -
            ins: P. Saint-Andre
     RFC2119:
+    RFC3986:
     RFC7519:
     RFC8174:
     RFC8259:
@@ -92,6 +93,8 @@ GNAP core protocol specification {{I-D.ietf-gnap-core-protocol}}.
 
 This document contains non-normative examples of partial and complete HTTP messages, JSON structures, URLs, query components, keys, and other elements. Some examples use a single trailing backslash '\' to indicate line wrapping for long values, as per {{!RFC8792}}. The `\` character and leading spaces on wrapped lines are not part of the value.
 
+Terminology specific to GNAP is defined in the terminology section of the core specification {{I-D.ietf-gnap-core-protocol}}, and provides definitions for the protocol roles: Authorization Server (AS), Client, Resource Server (RS), Resource Owner (RO), End-user; as well as the protocol elements: Attribute, Access Token, Grant, Privilege, Protected Resource, Right, Subject, Subject Information. The same definitions are used in this document.
+
 # Access Token Formats {#structure}
 
 When the AS issues an access token for use at an RS, the RS
@@ -137,23 +140,43 @@ pieces.
 ## RS-facing AS Discovery {#discovery}
 
 A GNAP AS offering RS-facing services can publish its features on
-a well-known discovery document using the URL `.well-known/gnap-as-rs`.
+a well-known discovery document using the URL `.well-known/gnap-as-rs` appended
+to the grant request endpoint URL.
 
-This endpoint contains a JSON document {{RFC8259}} consisting of a single JSON
-object with any combination of the following optional fields:
+The discovery response is a JSON document {{RFC8259}} consisting of a single JSON
+object with the following fields:
 
-introspection_endpoint:
-: The URL of the endpoint offering introspection. {{introspection}}
+introspection_endpoint (string):
+: OPTIONAL. The URL of the endpoint offering introspection. 
+    The location MUST be a URL {{RFC3986}}
+    with a scheme component that MUST be https, a host component, and optionally,
+    port, path and query components and no fragment components.
+    {{introspection}}
 
-token_formats_supported:
+token_formats_supported (array of strings):
 : A list of token formats supported by this AS. The values in this list
     MUST be registered in the GNAP Token Format Registry. {{iana-token-format}}
 
-resource_registration_endpoint:
-: The URL of the endpoint offering resource registration. {{rs-register-resource-handle}}
+resource_registration_endpoint (string):
+: The URL of the endpoint offering resource registration.
+    The location MUST be a URL {{RFC3986}}
+    with a scheme component that MUST be https, a host component, and optionally,
+    port, path and query components and no fragment components.
+    {{rs-register-resource-handle}}
 
-grant_endpoint:
-: The grant endpoint of the GNAP AS.
+grant_request_endpoint (string):
+: REQUIRED. The location of the AS's grant request endpoint, used by the RS
+    to derive downstream access tokens.
+    The location MUST be a URL {{RFC3986}}
+    with a scheme component that MUST be https, a host component, and optionally,
+    port, path and query components and no fragment components. This URL MUST
+    be the same URL used by client instances in support of GNAP requests.
+    {{token-chaining}}
+
+key_proofs_supported (array of strings)
+: OPTIONAL. A list of the AS's supported key
+    proofing mechanisms. The values of this list correspond to possible
+    values of the `proof` field of the key section of the request.
 
 ## Protecting RS requests to the AS {#authentication}
 
@@ -208,6 +231,20 @@ endpoint at the AS to get token information.
 The RS signs the request with its own key and sends the access
 token as the body of the request.
 
+access_token (string):
+: REQUIRED. The access token value presented to the RS by the client instance.
+
+proof (string):
+: RECOMMENDED. The proofing method used by the client instance to bind the token to the RS request.
+
+resource_server (string or object):
+: REQUIRED. The identification used to authenticate the resource server making this call, either
+    by value or by reference as described in {{authentication}}.
+
+access (array of strings/objects):
+: OPTIONAL. The minimum access rights required to fulfill the request. This MUST be in the
+    format described in the Resource Access Rights section of {{I-D.ietf-gnap-core-protocol}}.
+
 ~~~
 POST /introspect HTTP/1.1
 Host: server.example.com
@@ -221,13 +258,46 @@ Detached-JWS: ejy0...
 }
 ~~~
 
+The AS MUST validate the access token value and determine if the token is active. An
+active access token is defined as a token that
 
+- was issued by the processing AS,
+- has not been revoked,
+- has not expired, and
+- is appropriate for presentation at the identified RS.
 
 The AS responds with a data structure describing the token's
 current state and any information the RS would need to validate the
 token's presentation, such as its intended proofing mechanism and key
-material. The response MAY include any fields defined in an access
-token response.
+material. 
+
+active (boolean):
+: REQUIRED. If `true`, the access token presented is active,
+    as defined above. If any of the criteria for an active token
+    are not true, or if the AS is unable to make a
+    determination (such as the token is not found), the value is 
+    set to `false` and other fields are omitted.
+
+If the access token is active, additional fields from the single access token
+response structure defined in {{I-D.ietf-gnap-core-protocol}} are included. In
+particular, these include the following:
+
+access (array of strings/objects):
+: REQUIRED. The access rights associated with this access token. This MUST be in the
+    format described in the Resource Access Rights section of {{I-D.ietf-gnap-core-protocol}}.
+    This array MAY be filtered or otherwise limited for consumption by the identified RS, including
+    being an empty array.
+
+key (object/string):
+: REQUIRED if the token is bound. The key bound to the access token, to allow the RS
+    to validate the signature of the request from the client instance. If the access
+    token is a bearer token, this MUST NOT be included.
+
+flags (array of strings):
+: OPTIONAL. The set of flags associated with the access token.
+
+The response MAY include any additional fields defined in an access
+token response and MUST NOT include the access token `value` itself.
 
 ~~~
 HTTP/1.1 200 OK
@@ -252,19 +322,40 @@ Cache-Control: no-store
 }
 ~~~
 
-## Registering a Resource Handle {#rs-register-resource-handle}
+## Registering a Resource Set {#rs-register-resource-handle}
 
 If the RS needs to, it can post a set of resources as described in the Resource Access Rights section of 
-{{I-D.ietf-gnap-core-protocol}} to the AS's resource registration endpoint.
+{{I-D.ietf-gnap-core-protocol}} to the AS's resource registration endpoint along with information about
+what the RS will need to validate the request.
+
+access (array of objects/strings):
+: REQUIRED. The list of access rights associated with the request in the format described
+    in the "Resource Access Rights" section of {{I-D.ietf-gnap-core-protocol}}.
+
+resource_server (string or object):
+: REQUIRED. The identification used to authenticate the resource server making this call, either
+    by value or by reference as described in {{authentication}}.
+
+token_format_required (string):
+: OPTIONAL. The token format required to access the identified resource. If the field is omitted,
+    the token format is at the discretion of the AS. If the AS does not support the requested
+    token format, the AS MUST return an error to the RS.
+
+token_introspection_required (boolean):
+: OPTIONAL. If present and set to `true`, the RS expects to make a token introspection request as
+    described in {{introspection}}. If absent or set to `false`, the RS does not anticipate needing
+    to make an introspection request for tokens relating to this resource set.
 
 The RS MUST identify itself with its own key and sign the
-request.
+request. 
 
 ~~~
 POST /resource HTTP/1.1
 Host: server.example.com
 Content-Type: application/json
-Detached-JWS: ejy0...
+Signature-Input: sig1=...
+Signature: sig1=...
+Digest: ...
 
 {
     "access": [
@@ -292,8 +383,23 @@ Detached-JWS: ejy0...
 
 
 
-The AS responds with a handle appropriate to represent the
-resources list that the RS presented.
+The AS responds with a reference appropriate to represent the
+resources list that the RS presented in its request as well as
+any additional information the RS might need in future requests.
+
+resource_reference (string):
+: REQUIRED. A single string representing the list of resources registered in the request. 
+    The RS MAY make this handle available to a client instance as part of a 
+    discovery response as described in {{I-D.ietf-gnap-core-protocol}} or as
+    documentation to client software developers.
+
+instance_id (string):
+: OPTIONAL. An instance identifier that the RS can use to refer to itself in future calls to
+    the AS, in lieu of sending its key by value.
+
+introspection_endpoint (string):
+: OPTIONAL. The introspection endpoint of this AS, used to allow the RS to perform
+    token introspection. {{introspection}}
 
 ~~~
 HTTP/1.1 200 OK
@@ -301,19 +407,9 @@ Content-Type: application/json
 Cache-Control: no-store
 
 {
-    "resource_handle": "FWWIKYBQ6U56NL1"
+    "resource_reference": "FWWIKYBQ6U56NL1"
 }
 ~~~
-
-
-
-The RS MAY make this handle available as part of a 
-discovery response as described in {{I-D.ietf-gnap-core-protocol}} or as
-documentation to developers.
-
-\[\[ [See issue #117](https://github.com/ietf-wg-gnap/gnap-core-protocol/issues/117) \]\]
-
-
 
 # Deriving a downstream token {#token-chaining}
 
@@ -457,11 +553,14 @@ When the client instance receives information about the protecting AS from an RS
 derive information about the resources being protected without releasing the resources themselves.
 
 --- back
-   
+
 # Document History {#history}
 
 - Since -00
     - Added access token format registry.
+    - Filled out introspection protocol.
+    - Filled out resource registration protocol.
+    - Expanded RS-facing discovery mechanisms.
     - Moved client-facing RS response back to GNAP core document.
 
 - -00 
