@@ -100,7 +100,7 @@ Terminology specific to GNAP is defined in the terminology section of the core s
 When the AS issues an access token for use at an RS, the RS
 needs to have some means of understanding what the access token is for
 in order to determine how to respond to the request. The core GNAP
-protocol neither makes assumptions nor demands on the format or contents
+protocol makes neither assumptions nor demands on the format or contents
 of the access token, and in fact, the token format and contents are opaque
 to the client instance. However, such token formats can be the topic of agreements
 between the AS and RS.
@@ -594,4 +594,3 @@ derive information about the resources being protected without releasing the res
 
 - -00 
     - Extracted resource server section.
-
