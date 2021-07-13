@@ -83,7 +83,7 @@ methods for an RS to derive a downstream token for calling another
 chained RS.
 
 The means of the authorization server issuing
-the access token to the client instance, and the means of the client instance
+the access token to the client instance and the means of the client instance
 presenting the access token to the resource server are the subject of the 
 GNAP core protocol specification {{I-D.ietf-gnap-core-protocol}}.
 
