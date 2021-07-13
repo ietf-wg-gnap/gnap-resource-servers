@@ -223,7 +223,7 @@ to be used at one or more RSs. The AS can offer an introspection service
 to allow an RS to validate that a given access token:
 
  - has been issued by the AS
- - has not been expired
+ - has not expired
  - has not been revoked
  - is appropriate for the RS identified in the call
 
