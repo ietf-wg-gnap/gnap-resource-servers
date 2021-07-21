@@ -76,7 +76,7 @@ connections are particularly useful for connecting an AS and RS from
 different vendors, allowing interoperable distributed deployments
 of GNAP-protected systems.
 
-This specification defines several means for a RS and AS to
+This specification defines several means for an RS and AS to
 communicate these aspects with each other, including structured
 access tokens and RS-facing APIs. This specification also discusses
 methods for an RS to derive a downstream token for calling another
@@ -100,8 +100,8 @@ Terminology specific to GNAP is defined in the terminology section of the core s
 When the AS issues an access token for use at an RS, the RS
 needs to have some means of understanding what the access token is for
 in order to determine how to respond to the request. The core GNAP
-protocol makes no assumptions or demands on the format or contents
-of the access token, and in fact the token format and contents are opaque
+protocol makes neither assumptions nor demands on the format or contents
+of the access token, and in fact, the token format and contents are opaque
 to the client instance. However, such token formats can be the topic of agreements
 between the AS and RS.
 
@@ -594,4 +594,3 @@ derive information about the resources being protected without releasing the res
 
 - -00 
     - Extracted resource server section.
-
