@@ -37,9 +37,9 @@ normative:
        title: Recommendations for Secure Use of Transport Layer Security (TLS) and Datagram Transport Layer Security (DTLS)
        date: May 2015
        author:
-         - 
+         -
            ins: Y. Sheffer
-         - 
+         -
            ins: R. Holz
          -
            ins: P. Saint-Andre
@@ -64,14 +64,14 @@ with authorization servers (AS) in an interoperable fashion.
 The core GNAP protocol does not define any one specific mechanism
 for the resource server (RS) to communicate with the authorization
 server (AS), allowing the connection between these components
-to be solved orthogonally to the core protocol's concerns. For example, 
+to be solved orthogonally to the core protocol's concerns. For example,
 the RS and AS roles could be fulfilled by the same piece of software with
 common storage, obviating the need for any connecting protocol. However,
 it is often desirable to have the RS and AS communicate at runtime
 for a variety of purposes, including allowing the RS to validate and
-understand the rights and privileges associated with a grant of 
+understand the rights and privileges associated with a grant of
 access represented by an access token issued by the AS, or negotiating
-the capabilities of either party. These types of 
+the capabilities of either party. These types of
 connections are particularly useful for connecting an AS and RS from
 different vendors, allowing interoperable distributed deployments
 of GNAP-protected systems.
@@ -84,7 +84,7 @@ chained RS.
 
 The means of the authorization server issuing
 the access token to the client instance and the means of the client instance
-presenting the access token to the resource server are the subject of the 
+presenting the access token to the resource server are the subject of the
 GNAP core protocol specification {{I-D.ietf-gnap-core-protocol}}.
 
 ## Terminology
@@ -117,7 +117,7 @@ the RS to derive sub-tokens without having to call the AS
 as described in {{token-chaining}}.
 
 The supported token formats can be communicated dynamically at runtime
-between the AS and RS in several places. 
+between the AS and RS in several places.
 
 - The AS can declare its supported token formats as part of RS-facing discovery {{discovery}}
 - The RS can require a specific token format be used to access a registered resource set {{rs-register-resource-handle}}
@@ -147,7 +147,7 @@ The discovery response is a JSON document {{RFC8259}} consisting of a single JSO
 object with the following fields:
 
 introspection_endpoint (string):
-: OPTIONAL. The URL of the endpoint offering introspection. 
+: OPTIONAL. The URL of the endpoint offering introspection.
     The location MUST be a URL {{RFC3986}}
     with a scheme component that MUST be https, a host component, and optionally,
     port, path and query components and no fragment components.
@@ -214,7 +214,7 @@ or by reference:
 
 The AS MAY require an RS to pre-register its keys
 or could allow calls from arbitrary keys in a trust-on-first-use
-model. 
+model.
 
 ## Token Introspection {#introspection}
 
@@ -228,7 +228,7 @@ to allow an RS to validate that a given access token:
  - is appropriate for the RS identified in the call
 
 When the RS receives an access token, it can call the introspection
-endpoint at the AS to get token information. 
+endpoint at the AS to get token information.
 \[\[ [See issue #115](https://github.com/ietf-wg-gnap/gnap-core-protocol/issues/115) \]\]
 
 ~~~
@@ -238,8 +238,8 @@ endpoint at the AS to get token information.
 |        |       |      |       |      |
 |        |       |      |<-(3)--|      |
 |        |       |      |       +------+
-|        |<-(4)--|      |               
-+--------+       +------+               
+|        |<-(4)--|      |
++--------+       +------+
 ~~~
 
 1. The client instance calls the RS with its access token.
@@ -296,13 +296,13 @@ active access token is defined as a token that
 The AS responds with a data structure describing the token's
 current state and any information the RS would need to validate the
 token's presentation, such as its intended proofing mechanism and key
-material. 
+material.
 
 active (boolean):
 : REQUIRED. If `true`, the access token presented is active,
     as defined above. If any of the criteria for an active token
     are not true, or if the AS is unable to make a
-    determination (such as the token is not found), the value is 
+    determination (such as the token is not found), the value is
     set to `false` and other fields are omitted.
 
 If the access token is active, additional fields from the single access token
@@ -351,7 +351,7 @@ Cache-Control: no-store
 
 ## Registering a Resource Set {#rs-register-resource-handle}
 
-If the RS needs to, it can post a set of resources as described in the Resource Access Rights section of 
+If the RS needs to, it can post a set of resources as described in the Resource Access Rights section of
 {{I-D.ietf-gnap-core-protocol}} to the AS's resource registration endpoint along with information about
 what the RS will need to validate the request.
 
@@ -374,7 +374,7 @@ token_introspection_required (boolean):
     to make an introspection request for tokens relating to this resource set.
 
 The RS MUST identify itself with its own key and sign the
-request. 
+request.
 
 ~~~
 POST /resource HTTP/1.1
@@ -415,8 +415,8 @@ resources list that the RS presented in its request as well as
 any additional information the RS might need in future requests.
 
 resource_reference (string):
-: REQUIRED. A single string representing the list of resources registered in the request. 
-    The RS MAY make this handle available to a client instance as part of a 
+: REQUIRED. A single string representing the list of resources registered in the request.
+    The RS MAY make this handle available to a client instance as part of a
     discovery response as described in {{I-D.ietf-gnap-core-protocol}} or as
     documentation to client software developers.
 
@@ -442,7 +442,7 @@ Cache-Control: no-store
 
 Some architectures require an RS to act as a client instance and use a derived access
 token for a secondary RS. Since the RS is not the same entity that made the initial grant
-request, the RS is not capable of referencing or modifying the existing grant. As such, 
+request, the RS is not capable of referencing or modifying the existing grant. As such,
 the RS needs to request or generate a new token access token for its use at the secondary RS.
 This internal secondary token is issued in the context of the incoming access token.
 
@@ -489,7 +489,7 @@ request one from the AS by making a token request as described in
 {{I-D.ietf-gnap-core-protocol}} and presenting the existing access token's
 value in the "existing_access_token" field.
 
-Since the RS is acting as a client instance, 
+Since the RS is acting as a client instance,
 the RS MUST identify itself with its own key in the `client` field and sign the
 request just as any client instance would, as described in {{authentication}}.
 
@@ -525,7 +525,7 @@ Detached-JWS: ejy0...
 }
 ~~~
 
-The AS responds with a token for the downstream RS2 as described in 
+The AS responds with a token for the downstream RS2 as described in
 {{I-D.ietf-gnap-core-protocol}}. The downstream RS2 could
 repeat this process as necessary for calling further RS's.
 
@@ -545,7 +545,7 @@ This specification establishes the GNAP Token Format Registry to define token fo
 
 ### Registry Template
 
-### Initial Registry Contents 
+### Initial Registry Contents
 
 The table below contains the initial contents of the GNAP Token Format Registry.
 
@@ -571,7 +571,7 @@ provide proof of a key as well.
 
 \[\[ TBD: There are a lot of privacy considerations to add. \]\]
 
-When introspection is used, the AS is made aware of a particular token being used at a particular AS, and the 
+When introspection is used, the AS is made aware of a particular token being used at a particular AS, and the
 AS would not otherwise have insight into this.
 
 When the client instance receives information about the protecting AS from an RS, this can be used to
@@ -582,7 +582,7 @@ derive information about the resources being protected without releasing the res
 # Document History {#history}
 
 - Since -01
-    - 
+    -
 
 - -01
     - Better described RS authentication.
@@ -592,5 +592,5 @@ derive information about the resources being protected without releasing the res
     - Expanded RS-facing discovery mechanisms.
     - Moved client-facing RS response back to GNAP core document.
 
-- -00 
+- -00
     - Extracted resource server section.
