@@ -33,16 +33,16 @@ author:
 
 normative:
     BCP195:
-       target: 'https://www.rfc-editor.org/info/bcp195'
-       title: Recommendations for Secure Use of Transport Layer Security (TLS) and Datagram Transport Layer Security (DTLS)
-       date: May 2015
-       author:
-         -
-           ins: Y. Sheffer
-         -
-           ins: R. Holz
-         -
-           ins: P. Saint-Andre
+      target: 'https://www.rfc-editor.org/info/bcp195'
+      title: Recommendations for Secure Use of Transport Layer Security (TLS) and Datagram Transport Layer Security (DTLS)
+      date: May 2015
+      author:
+        -
+          ins: Y. Sheffer
+        -
+          ins: R. Holz
+        -
+          ins: P. Saint-Andre
     RFC2119:
     RFC3986:
     RFC7519:
@@ -222,10 +222,10 @@ The AS issues access tokens representing a set of delegated access rights
 to be used at one or more RSs. The AS can offer an introspection service
 to allow an RS to validate that a given access token:
 
- - has been issued by the AS
- - has not expired
- - has not been revoked
- - is appropriate for the RS identified in the call
+- has been issued by the AS
+- has not expired
+- has not been revoked
+- is appropriate for the RS identified in the call
 
 When the RS receives an access token, it can call the introspection
 endpoint at the AS to get token information.
