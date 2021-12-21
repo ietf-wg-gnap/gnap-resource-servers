@@ -89,7 +89,7 @@ GNAP core protocol specification {{I-D.ietf-gnap-core-protocol}}.
 
 ## Terminology
 
-{::boilerplate bcp14}
+{::boilerplate bcp14-tagged}
 
 This document contains non-normative examples of partial and complete HTTP messages, JSON structures, URLs, query components, keys, and other elements. Some examples use a single trailing backslash `\` to indicate line wrapping for long values, as per {{!RFC8792}}. The `\` character and leading spaces on wrapped lines are not part of the value.
 
