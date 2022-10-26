@@ -42,7 +42,9 @@ normative:
     RFC7519:
     RFC8174:
     RFC8259:
+    RFC8280:
     I-D.ietf-gnap-core-protocol:
+    I-D.irtf-hrpc-association:
 
 --- abstract
 
@@ -571,12 +573,35 @@ AS would not otherwise have insight into this.
 When the client instance receives information about the protecting AS from an RS, this can be used to
 derive information about the resources being protected without releasing the resources themselves.
 
+# Human Rights Considerations {#human-rights}
+
+Human rights considerations are different form from privacy considerations to the extent they are universal and cannot be regulated or consented away. Although there is no human right specific to delegated authorization, implementers of GNAP need to take very seriously the existing "Research into Human Rights Protocol Considerations" {{!RFC8280}} and the litterature body on "Freedom of Association and Assembly (FAA)" {{!I-D.irtf-hrpc-association}} from IRTF and HRPC for the purpose of risk analysis and suggested mitigations.
+
+Existing authorization standards have contributed to global platform oligopolies that are difficult to regulate and, when pressed, collaborate with governments that do not honor universal human rights. This unintended consequence of authorization design is due to a combination of resource server autonomy and resource user convenience. Resource servers, if allowed, will do as much surveillance as they can get away with or outsource that surveillance to platform intermediaries in exchange for a reduced operating cost. For their part, users will, almost without exception, choose the most convenient path to resource access even when that path exposes them to secondary costs or poorly understood risks.
+
+Thanks to the advanced capabilities described in this document, the GNAP protocol (with RS extension) supports human rights by allowing users to freely associate with delegates while ensuring interoperability at the RS and AS.
+
+## Resource Server Delegation with Attenuation
+Without the capacity for attenuation, a resource owner is forced, in the human rights sense, to make a choice between sharing attenuation policies with a request processor they did not freely choose or granting unattenuated access to requesting parties through impersonation. This compromises human rights through forced surveillance and compromises security through a lack of accountability.
+
+By way of mitigation, GNAP allows the RS to choose their AS as controller but also allows the RO to choose _their_ intermediary for processing resource requests. This intermediary could be a fiduciary or a community unrelated to and untrusted by either the AS or RS. In particular, GNAP supports a variety of [token formats](#iana-token-format). This makes attenuation of delegation possible either directly by token design or indirectly through token exchange at the AS.
+
+When a GNAP resource server provides capabilities that support attenuation the resource owner can use that capability directly or the owner can delegate some of that capapbility to an agent that they choose. This mitigation avoids the forced association problem but it is effective in the real-world sense only if this is also a convenient choice to the end user.
+
+## Freedom of Association through interoperability
+
+Aligning the incentives for FAA means that resource servers need to implement support for attenuated delegation and do so in a way that is interoperable across any chosen GNAP-labeled authorization server. A real-world example would be open banking regulations that separate the choice of bank as resource server from the choice of payment processor (e.g. credit card) as authorization server.
+
+Optionality in attenuation mechanisms could again result in platform network effects as the cost and complexity of implementations drives smaller delegates out of the market. RS / AS are expected to comply with [interoperability profiles](#interop) with all clients. RS and AS can add value by publishing their additional supported options.
+
+GNAP also encourages interoperability with a variety of identity standards. Beyond an open choice between federated providers, it is meant to play just as well with decentralized identifiers (DIDs) and Verifiable Credentials (VCs).
+
 --- back
 
 # Document History {#history}
 
 - Since -01
-    -
+    - Added human rights considerations
 
 - -01
     - Better described RS authentication.
@@ -588,3 +613,7 @@ derive information about the resources being protected without releasing the res
 
 - -00
     - Extracted resource server section.
+
+## Interoperability Profiles {#interop}
+
+\[\[ Not just JWT \]\]
