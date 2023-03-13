@@ -1,6 +1,6 @@
 ---
 title: 'Grant Negotiation and Authorization Protocol Resource Server Connections'
-docname: draft-ietf-gnap-resource-servers-02
+docname: draft-ietf-gnap-resource-servers-03
 category: std
 
 ipr: trust200902
@@ -153,7 +153,7 @@ possible RS's to present the token to.
 Access tokens in GNAP are bound to the client instance's registered or presented key, except in
 cases where the access token is a bearer token. For all tokens bound to a key, the AS and RS need to
 be able to identify which key the token is bound to, otherwise an attacker could substitute their
-own key during presentation of the token. In the case of an asymmetric algorithm, the model for the 
+own key during presentation of the token. In the case of an asymmetric algorithm, the model for the
 AS and RS need only contain the public key, while the client instance will also need to know the private
 key in order to present the token appropriately. In the case of a symmetric algorithm, all parties
 will need to either know or be able to derive the shared key.
@@ -976,9 +976,11 @@ derive information about the resources being protected without releasing the res
 
 # Document History {#history}
 
-- -02
+- -03
     - Added token model.
     - Added IANA sections.
+
+- -02
     - Editorial and formatting fixes.
 
 - -01
