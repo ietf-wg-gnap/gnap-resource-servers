@@ -976,7 +976,9 @@ derive information about the resources being protected without releasing the res
 
 # Document History {#history}
 
-- Since -01
+- -02
+    - Added token model.
+    - Added IANA sections.
     - Editorial and formatting fixes.
 
 - -01
