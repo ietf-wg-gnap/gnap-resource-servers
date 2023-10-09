@@ -44,6 +44,9 @@ normative:
     RFC8259:
     GNAP: I-D.ietf-gnap-core-protocol
 
+entity:
+    SELF: "RFC xxxx"
+
 --- abstract
 
 GNAP defines a mechanism for delegating authorization to a
@@ -796,11 +799,28 @@ repeat this process as necessary for calling further RS's.
 
 # IANA Considerations {#IANA}
 
-IANA is requested to create the following registries.
+IANA is requested to perform the following actions.
+
+## Well-Known URI {#IANA-well-known}
+
+The "gnap" URI suffix is registered into the Well-Known URIs Registry.
+
+URI Suffix:
+: gnap
+
+Change Controller:
+: IETF
+
+Specification Document:
+: {{discovery}} of {{&SELF}}
+
+Status:
+: Permanent
+
 
 ## Token Formats Registry {#IANA-token-format}
 
-This document defines a GNAP token format, for which IANA is asked to create and maintain a new registry titled "GNAP Token Formats". Initial values for this registry are given in {{IANA-token-format-contents}}. Future assignments and modifications to existing assignment are to be made through the Expert Review registration policy {{?RFC8126}}.
+This document defines a GNAP token format, for which IANA is asked to create and maintain a new registry titled "GNAP Token Formats". Initial values for this registry are given in {{IANA-token-format-contents}}. Future assignments and modifications to existing assignment are to be made through the Specification Required registration policy {{?RFC8126}}.
 
 The Designated Expert (DE) is expected to ensure that all registrations follow the template presented in {{IANA-token-format-template}}.
 The DE is expected to ensure that the format's definition is sufficiently unique from other formats provided by existing parameters.
@@ -832,7 +852,7 @@ Reference
 
 ## Token Introspection Registry {#IANA-token-introspection}
 
-This document defines GNAP token introspection, for which IANA is asked to create and maintain a new registry titled "GNAP Token Introspection". Initial values for this registry are given in {{IANA-token-introspection-contents}}. Future assignments and modifications to existing assignment are to be made through the Expert Review registration policy {{?RFC8126}}.
+This document defines GNAP token introspection, for which IANA is asked to create and maintain a new registry titled "GNAP Token Introspection". Initial values for this registry are given in {{IANA-token-introspection-contents}}. Future assignments and modifications to existing assignment are to be made through the Specification Required registration policy {{?RFC8126}}.
 
 The Designated Expert (DE) is expected to ensure that all registrations follow the template presented in {{IANA-token-introspection-template}}.
 The DE is expected to ensure that the claim's definition is sufficiently orthogonal to other claims defined in the registry so as avoid overlapping functionality.
@@ -854,17 +874,17 @@ Reference
 The table below contains the initial contents of the GNAP Token Introspection Registry.
 
 |Name|Type|Reference|
-|active|boolean| {{introspection}} of This document|
-|access|array of strings/objects| {{introspection}} of This document|
-|key|object/string|  {{introspection}} of This document|
-|flags|array of strings| {{introspection}} of This document|
-|exp|integer| {{introspection}} of This document|
-|iat|integer| {{introspection}} of This document|
-|nbf|integer| {{introspection}} of This document|
-|aud|string or array of strings| {{introspection}} of This document|
-|sub|string| {{introspection}} of This document|
-|iss|string| {{introspection}} of This document|
-|instance_id|string| {{introspection}} of This document|
+|active|boolean| {{introspection}} of {{&SELF}}|
+|access|array of strings/objects| {{introspection}} of {{&SELF}}|
+|key|object/string|  {{introspection}} of {{&SELF}}|
+|flags|array of strings| {{introspection}} of {{&SELF}}|
+|exp|integer| {{introspection}} of {{&SELF}}|
+|iat|integer| {{introspection}} of {{&SELF}}|
+|nbf|integer| {{introspection}} of {{&SELF}}|
+|aud|string or array of strings| {{introspection}} of {{&SELF}}|
+|sub|string| {{introspection}} of {{&SELF}}|
+|iss|string| {{introspection}} of {{&SELF}}|
+|instance_id|string| {{introspection}} of {{&SELF}}|
 
 ## Resource Set Registration Request Parameters {#IANA-resource-registration-request}
 
@@ -890,10 +910,10 @@ Reference
 The table below contains the initial contents of the GNAP Resource Set Registration Request Parameters Registry.
 
 |Name|Type|Reference|
-|access|array of strings/objects| {{rs-register-resource-handle}} of This document|
-|resource_server| string or object| {{rs-register-resource-handle}} of This document|
-|token_format_required|string| {{rs-register-resource-handle}} of This document|
-|token_introspection_required|boolean| {{rs-register-resource-handle}} of This document|
+|access|array of strings/objects| {{rs-register-resource-handle}} of {{&SELF}}|
+|resource_server| string or object| {{rs-register-resource-handle}} of {{&SELF}}|
+|token_format_required|string| {{rs-register-resource-handle}} of {{&SELF}}|
+|token_introspection_required|boolean| {{rs-register-resource-handle}} of {{&SELF}}|
 
 ## Resource Set Registration Response Parameters {#IANA-resource-registration-response}
 
@@ -919,9 +939,9 @@ Reference
 The table below contains the initial contents of the GNAP Resource Set Registration Response Parameters Registry.
 
 |Name|Type|Reference|
-|resource_reference|string| {{rs-register-resource-handle}} of This document|
-|instance_id| string| {{rs-register-resource-handle}} of This document|
-|introspection_endpoint|string| {{rs-register-resource-handle}} of This document|
+|resource_reference|string| {{rs-register-resource-handle}} of {{&SELF}}|
+|instance_id| string| {{rs-register-resource-handle}} of {{&SELF}}|
+|introspection_endpoint|string| {{rs-register-resource-handle}} of {{&SELF}}|
 
 ## RS-Facing Discovery {#IANA-rs-discovery}
 
@@ -947,11 +967,11 @@ Reference
 The table below contains the initial contents of the GNAP RS-Facing Discovery Registry.
 
 |Name|Type|Reference|
-|introspection_endpoint|string| {{discovery}} of This document|
-|token_formats_supported|array of strings| {{discovery}} of This document|
-|resource_registration_endpoint|string| {{discovery}} of This document|
-|grant_request_endpoint|string| {{discovery}} of This document|
-|key_proofs_supported|array of strings| {{discovery}} of This document|
+|introspection_endpoint|string| {{discovery}} of {{&SELF}}|
+|token_formats_supported|array of strings| {{discovery}} of {{&SELF}}|
+|resource_registration_endpoint|string| {{discovery}} of {{&SELF}}|
+|grant_request_endpoint|string| {{discovery}} of {{&SELF}}|
+|key_proofs_supported|array of strings| {{discovery}} of {{&SELF}}|
 
 # Security Considerations {#Security}
 
