@@ -623,10 +623,12 @@ resource_server (string or object):
 : REQUIRED. The identification used to authenticate the resource server making this call, either
     by value or by reference as described in {{authentication}}.
 
-token_format_required (string):
-: OPTIONAL. The token format required to access the identified resource. If the field is omitted,
-    the token format is at the discretion of the AS. If the AS does not support the requested
-    token format, the AS MUST return an error to the RS.
+token_formats_supported (array of strings):
+: OPTIONAL. The token formats the RS is able to process for accessing the resource.
+    The values in this array MUST be registered in the GNAP Token Formats Registry in {{IANA-token-format}}.
+    If the field is omitted, the token format is at the discretion of the AS.
+    If the AS does not support any of the requested
+    token formats, the AS MUST return an error to the RS.
 
 token_introspection_required (boolean):
 : OPTIONAL. If present and set to `true`, the RS expects to make a token introspection request as
@@ -899,7 +901,7 @@ The table below contains the initial contents of the GNAP Resource Set Registrat
 |Name|Type|Reference|
 |access|array of strings/objects| {{rs-register-resource-handle}} of This document|
 |resource_server| string or object| {{rs-register-resource-handle}} of This document|
-|token_format_required|string| {{rs-register-resource-handle}} of This document|
+|token_formats_supported|array of strings| {{rs-register-resource-handle}} of This document|
 |token_introspection_required|boolean| {{rs-register-resource-handle}} of This document|
 
 ## Resource Set Registration Response Parameters {#IANA-resource-registration-response}
