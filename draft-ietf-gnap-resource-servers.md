@@ -631,7 +631,8 @@ token_format_required (string):
 token_introspection_required (boolean):
 : OPTIONAL. If present and set to `true`, the RS expects to make a token introspection request as
     described in {{introspection}}. If absent or set to `false`, the RS does not anticipate needing
-    to make an introspection request for tokens relating to this resource set.
+    to make an introspection request for tokens relating to this resource set. If the AS does not
+    support token introspection for this RS, the AS MUST return an error to the RS.
 
 The RS MUST identify itself with its own key and sign the
 request.
@@ -677,16 +678,16 @@ any additional information the RS might need in future requests.
 resource_reference (string):
 : REQUIRED. A single string representing the list of resources registered in the request.
     The RS MAY make this handle available to a client instance as part of a
-    discovery response as described in {{GNAP}} or as
+    discovery response as described in {{Section 9.1 of GNAP}} or as
     documentation to client software developers.
 
 instance_id (string):
 : OPTIONAL. An instance identifier that the RS can use to refer to itself in future calls to
-    the AS, in lieu of sending its key by value.
+    the AS, in lieu of sending its key by value. See {{authentication}}.
 
 introspection_endpoint (string):
 : OPTIONAL. The introspection endpoint of this AS, used to allow the RS to perform
-    token introspection. {{introspection}}
+    token introspection. See {{introspection}}.
 
 ~~~
 HTTP/1.1 200 OK
@@ -697,6 +698,12 @@ Cache-Control: no-store
     "resource_reference": "FWWIKYBQ6U56NL1"
 }
 ~~~
+
+If a resource was previously registered, the AS MAY return the same resource reference
+value as in previous responses.
+
+If the registration fails, the AS returns an HTTP 400 Bad Request error to the
+RS indicating that the registration was not successful.
 
 # Deriving a downstream token {#token-chaining}
 
