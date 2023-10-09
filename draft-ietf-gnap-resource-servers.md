@@ -383,37 +383,42 @@ to the grant request endpoint URL.
 The discovery response is a JSON document {{RFC8259}} consisting of a single JSON
 object with the following fields:
 
-introspection_endpoint (string):
-: OPTIONAL. The URL of the endpoint offering introspection.
+grant_request_endpoint (string):
+: The location of the AS's grant request endpoint defined by {{Section 9 of GNAP}}.
+    This URL MUST be the same URL used by client instances in support of GNAP requests.
+    The RS can use this to derive downstream access tokens, if supported by the AS.
     The location MUST be a URL {{RFC3986}}
     with a scheme component that MUST be https, a host component, and optionally,
     port, path and query components and no fragment components.
-    {{introspection}}
+    REQUIRED.
+    See {{token-chaining}}.
+
+introspection_endpoint (string):
+: The URL of the endpoint offering introspection.
+    The location MUST be a URL {{RFC3986}}
+    with a scheme component that MUST be https, a host component, and optionally,
+    port, path and query components and no fragment components.
+    REQUIRED if the AS supports introspection. An absent value indicates that the AS does not support introspection.
+    See {{introspection}}.
 
 token_formats_supported (array of strings):
 : A list of token formats supported by this AS. The values in this list
-    MUST be registered in the GNAP Token Format Registry. {{IANA-token-format}}
+    MUST be registered in the GNAP Token Format Registry in {{IANA-token-format}}.
+    OPTIONAL.
 
 resource_registration_endpoint (string):
 : The URL of the endpoint offering resource registration.
     The location MUST be a URL {{RFC3986}}
     with a scheme component that MUST be https, a host component, and optionally,
     port, path and query components and no fragment components.
-    {{rs-register-resource-handle}}
-
-grant_request_endpoint (string):
-: REQUIRED. The location of the AS's grant request endpoint, used by the RS
-    to derive downstream access tokens.
-    The location MUST be a URL {{RFC3986}}
-    with a scheme component that MUST be https, a host component, and optionally,
-    port, path and query components and no fragment components. This URL MUST
-    be the same URL used by client instances in support of GNAP requests.
-    {{token-chaining}}
+    REQUIRED if the AS supports dynamic resource registration. An absent value indicates that the AS does not support this feature.
+    See {{rs-register-resource-handle}}.
 
 key_proofs_supported (array of strings)
-: OPTIONAL. A list of the AS's supported key
+: A list of the AS's supported key
     proofing mechanisms. The values of this list correspond to possible
     values of the `proof` field of the key section of the request.
+    OPTIONAL.
 
 ## Protecting RS requests to the AS {#authentication}
 
