@@ -1,0 +1,16 @@
+{
+  "name": "gnap-resource-servers",
+  "version": "1.0.0",
+  "description": "GNAP Resource Server Specification",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ietf-wg-gnap/gnap-resource-servers.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ietf-wg-gnap/gnap-resource-servers/issues"
+  },
+  "homepage": "https://github.com/ietf-wg-gnap/gnap-resource-servers#readme",
+  "dependencies": {
+    "aasvg": "^0.3.1"
+  }
+}
