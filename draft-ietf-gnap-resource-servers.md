@@ -327,7 +327,7 @@ the contents of these AS-specific access tokens are also opaque to the RS.
 
 A client instance MUST take steps to differentiate these special-purpose access tokens from
 access tokens used at RS's.
-To facilitate this, a client instance can store AS-specific access tokens separately from 
+To facilitate this, a client instance can store AS-specific access tokens separately from
 other access tokens in order to keep them from being confused with each other and used at the
 wrong endpoints.
 
