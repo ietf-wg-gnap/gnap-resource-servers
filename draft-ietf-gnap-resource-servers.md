@@ -1,4 +1,4 @@
-,---
+---
 title: 'Grant Negotiation and Authorization Protocol Resource Server Connections'
 docname: draft-ietf-gnap-resource-servers-03
 category: std
