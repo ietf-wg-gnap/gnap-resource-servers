@@ -248,11 +248,31 @@ by the AS and RS.
 
 This corresponds to the `sub` claim of a {{JWT}} formatted token or a token introspection response.
 
-The RO information is not generally returned to the client instance, and in many cases returning
+Detailed RO information is not returned to the client instance
+when an access token is requested alone, and in many cases returning
 this information to the client instance would be a privacy violation on the part of the AS. Since the
 access token represents a specific delegated access, the client instance needs only to use the token
 at its target RS. Following the profile example, the client instance does not need to know
 the account identifier to get specific attributes about the account represented by the token.
+
+GNAP does allow for the return of subject information separately from the access token, in the form
+of identifiers and assertions. These values are returned directly to the client separately from any
+access tokens that are requested, though it's common that they represent the same party.
+
+### End User
+
+The end user is the party operating the client software. The client instance can facilitate the end user
+interacting with the AS in order to determine the end user's identity, gather authorization, and provide
+the results of that information back to the client instance.
+
+In many instances, the end user is the same party as the resource owner. However, in some cases,
+the two roles can be fulfilled by different people, where the RO is consulted asynchronously.
+The token model should be able to reflect these kinds of situations by representing the end user
+and RO separately.
+For example, an end user can request a financial payment, but the RO is the holder of the account
+that the payment would be withdrawn from. The RO would be consulted for approval by the AS outside
+of the flow of the GNAP request. A token in such circumstances would need to show both the
+RO and end user as separate entities.
 
 ### Client Instance
 
