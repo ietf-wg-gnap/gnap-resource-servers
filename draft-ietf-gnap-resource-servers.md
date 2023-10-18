@@ -973,6 +973,14 @@ as validating the token's signature and ensuring the relevant fields and results
 request being made. For reference-style tokens or tokens that are otherwise opaque to the RS, the token introspection
 RS-facing API can be used to provide updated information about the state of the token, as described in {{introspection}}.
 
+The RS needs to validate that a token:
+
+- Is intended for this RS (audience restriction)
+- Is presented using the appropriate key for the token (see also {{security-key-proof}})
+    Subject identification (the RS knows who authorized the token)
+    Issuer restriction (the RS knows who created the token, including signing a structure or providing introspection to prove this)
+
+
 Even though key proofing mechanisms have to cover the value of the token, validating the key proofing alone
 is not sufficient to protect a request to an RS.
 If an RS validates only the presentation method as described in {{security-key-proof}} without validating the
@@ -996,12 +1004,15 @@ is outside the scope of this specification.
 
 ## Key Proof Validation {#security-key-proof}
 
-For key-bound access tokens, the proofing method needs to be validated alongside the value of the token itself as described in {{security-token-vaidation}}.
+For key-bound access tokens, the proofing method needs to be validated alongside the value of the token itself as described in {{security-token-validation}}.
 The process of validation is defined by the key proofing method, as described in {{Section 7.3 of GNAP}}.
 
 If the proofing method is not validated, an attacker could use a compromised token without access to the token's bound key.
 
-The proofing should be validated independently on each request to the RS, particularly as aspects of the call could vary. 
+The RS also needs to ensure that the proofing method is appropriate for the key associated with the token, including any choice of
+algorithm or identifiers.
+
+The proofing should be validated independently on each request to the RS, particularly as aspects of the call could vary.
 As such, the RS should never cache the results of a proof validation from one message and apply it to a subsequent message.
 
 ## Token Exfiltration
@@ -1048,6 +1059,27 @@ RS depending on certain structures being present in the reference value, which d
 of the different roles in a GNAP system.
 
 To mitigate this, the AS should only use fully random or encrypted values for resource references.
+
+## Token Re-Issuance From an Untrusted AS
+
+It is possible for an attacker's client instance to issue its own tokens to another client instance, acting as
+an AS that the second client instance has chosen to trust. If the token is a bearer token or the re-issuance
+is bound using an AS-provided key, the target client instance will not be able to tell that the token was originally
+issued by the valid AS. This process allows an attacker to insert their own session and rights into an unsuspecting
+client instance, in the guise of a token valid for the attacker that appears to have been issued to the target
+client instance on behalf of its own RO.
+
+This attack is predicated on a misconfiguration with the targeted client, as it has been configured to get tokens
+from the attacker's AS and use those tokens with the target RS, which has no association with the attacker's AS.
+However, since the token is ultimately coming from the trusted AS, and is being presented with a valid key,
+the RS has no way of telling that the token was passed through an intermediary.
+
+To mitigate this, the RS can publish its association with the trusted AS through either discovery or documentation.
+Therefore, a client properly following this association would only go directly to the trusted RS directly for
+access tokens for the RS.
+
+Furthermore, limiting the use of bearer tokens and AS-provided keys to only highly trusted AS's and limited circumstances
+prevents the attacker from being able to willingly exfiltrate their token to an unsuspecting client instance.
 
 # Privacy Considerations {#Privacy}
 
