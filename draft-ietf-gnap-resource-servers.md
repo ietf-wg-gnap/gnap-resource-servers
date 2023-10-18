@@ -1023,7 +1023,7 @@ As such, the RS needs to protect token values as sensitive information and prote
 This is especially problematic with bearer tokens and tokens bound to a shared key, since an RS has access
 to all information necessary to create a new, valid request using the token in question.
 
-## Token Re-Use by an RS
+## Token Re-Use by an RS {#security-token-reuse-by-rs}
 
 If the access token is a bearer token, or the RS has access to the key material needed to present the token,
 the RS could be tricked into re-using an access token presented to it by a client. While it is possible to build
@@ -1080,6 +1080,22 @@ access tokens for the RS.
 
 Furthermore, limiting the use of bearer tokens and AS-provided keys to only highly trusted AS's and limited circumstances
 prevents the attacker from being able to willingly exfiltrate their token to an unsuspecting client instance.
+
+## Introspection of Token Keys
+
+The introspection response defined in {{introspection}} provides a means for the AS to tell the RS the key
+material needed to validate the key proof of the request. Capture of the introspection response can expose
+these security keys to an attacker. In the case of asymmetric cryptography, only the public key is exposed,
+and the token cannot be re-used by the attacker based on this result alone. This could potentially divulge
+information about the client instance that was unknown otherwise.
+
+If an access token is bound to a symmetric key, the RS will need access to the full key value in order to validate
+the key proof of the request, as described in {{security-key-proof}}. However, divulging the key
+material to the RS also gives the RS the ability to create a new request with the token.
+In this circumstance, the RS is under similar risk of token exfiltration and
+re-use as a bearer token, as described in {{security-token-reuse-by-rs}}. Consequently, symmetric
+keys should only be used in systems where the RS can be fully trusted to not create a new request with
+tokens presented to it.
 
 # Privacy Considerations {#Privacy}
 
