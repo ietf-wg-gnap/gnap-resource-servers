@@ -707,6 +707,38 @@ value as in previous responses.
 If the registration fails, the AS returns an HTTP 400 Bad Request error to the
 RS indicating that the registration was not successful.
 
+The client instance can then use the `resource_reference` value as a string-type access
+reference as defined in {{Section 8.1 of GNAP}}. This value MAY be combined with any other
+additional access rights requested by the client instance.
+
+~~~ json
+{
+    "access_token": {
+        "access": [
+            "FWWIKYBQ6U56NL1",
+            {
+                "type": "photo-api",
+                "actions": [
+                    "read",
+                    "write",
+                    "dolphin"
+                ],
+                "locations": [
+                    "https://server.example.net/",
+                    "https://resource.local/other"
+                ],
+                "datatypes": [
+                    "metadata",
+                    "images"
+                ]
+            },
+            "dolphin-metadata"
+        ]
+    },
+    "client": "client-12351.bdxqf"
+}
+~~~
+
 # Deriving a downstream token {#token-chaining}
 
 Some architectures require an RS to act as a client instance and use a derived access
