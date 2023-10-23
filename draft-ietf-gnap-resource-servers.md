@@ -647,15 +647,18 @@ resource_server (string or object):
 : REQUIRED. The identification used to authenticate the resource server making this call, either
     by value or by reference as described in {{authentication}}.
 
-token_format_required (string):
-: OPTIONAL. The token format required to access the identified resource. If the field is omitted,
-    the token format is at the discretion of the AS. If the AS does not support the requested
-    token format, the AS MUST return an error to the RS.
+token_formats_supported (array of strings):
+: OPTIONAL. The token formats the RS is able to process for accessing the resource.
+    The values in this array MUST be registered in the GNAP Token Formats Registry in {{IANA-token-format}}.
+    If the field is omitted, the token format is at the discretion of the AS.
+    If the AS does not support any of the requested
+    token formats, the AS MUST return an error to the RS.
 
 token_introspection_required (boolean):
 : OPTIONAL. If present and set to `true`, the RS expects to make a token introspection request as
     described in {{introspection}}. If absent or set to `false`, the RS does not anticipate needing
-    to make an introspection request for tokens relating to this resource set.
+    to make an introspection request for tokens relating to this resource set. If the AS does not
+    support token introspection for this RS, the AS MUST return an error to the RS.
 
 The RS MUST identify itself with its own key and sign the
 request.
@@ -701,16 +704,16 @@ any additional information the RS might need in future requests.
 resource_reference (string):
 : REQUIRED. A single string representing the list of resources registered in the request.
     The RS MAY make this handle available to a client instance as part of a
-    discovery response as described in {{GNAP}} or as
+    discovery response as described in {{Section 9.1 of GNAP}} or as
     documentation to client software developers.
 
 instance_id (string):
 : OPTIONAL. An instance identifier that the RS can use to refer to itself in future calls to
-    the AS, in lieu of sending its key by value.
+    the AS, in lieu of sending its key by value. See {{authentication}}.
 
 introspection_endpoint (string):
 : OPTIONAL. The introspection endpoint of this AS, used to allow the RS to perform
-    token introspection. {{introspection}}
+    token introspection. See {{introspection}}.
 
 ~~~
 HTTP/1.1 200 OK
@@ -719,6 +722,44 @@ Cache-Control: no-store
 
 {
     "resource_reference": "FWWIKYBQ6U56NL1"
+}
+~~~
+
+If a resource was previously registered, the AS MAY return the same resource reference
+value as in previous responses.
+
+If the registration fails, the AS returns an HTTP 400 Bad Request error to the
+RS indicating that the registration was not successful.
+
+The client instance can then use the `resource_reference` value as a string-type access
+reference as defined in {{Section 8.1 of GNAP}}. This value MAY be combined with any other
+additional access rights requested by the client instance.
+
+~~~ json
+{
+    "access_token": {
+        "access": [
+            "FWWIKYBQ6U56NL1",
+            {
+                "type": "photo-api",
+                "actions": [
+                    "read",
+                    "write",
+                    "dolphin"
+                ],
+                "locations": [
+                    "https://server.example.net/",
+                    "https://resource.local/other"
+                ],
+                "datatypes": [
+                    "metadata",
+                    "images"
+                ]
+            },
+            "dolphin-metadata"
+        ]
+    },
+    "client": "client-12351.bdxqf"
 }
 ~~~
 
@@ -935,7 +976,7 @@ The table below contains the initial contents of the GNAP Resource Set Registrat
 |Name|Type|Reference|
 |access|array of strings/objects| {{rs-register-resource-handle}} of {{&SELF}}|
 |resource_server| string or object| {{rs-register-resource-handle}} of {{&SELF}}|
-|token_format_required|string| {{rs-register-resource-handle}} of {{&SELF}}|
+|token_formats_supported|string| {{rs-register-resource-handle}} of {{&SELF}}|
 |token_introspection_required|boolean| {{rs-register-resource-handle}} of {{&SELF}}|
 
 ## Resource Set Registration Response Parameters {#IANA-resource-registration-response}
