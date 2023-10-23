@@ -44,6 +44,19 @@ normative:
     RFC8259:
     GNAP: I-D.ietf-gnap-core-protocol
 
+informative:
+    MACAROON:
+        target: https://research.google/pubs/pub41892/
+        title: "Macaroons: Cookies with Contextual Caveats for Decentralized Authorization in the Cloud"
+        date: 2014
+    BISCUIT:
+        target: https://www.biscuitsec.org/
+        title: Biscuit Authorization
+    ZCAPLD:
+        target: https://w3c-ccg.github.io/zcap-spec/
+        title: "Authorization Capabilities for Linked Data"
+        date: 2023
+
 --- abstract
 
 GNAP defines a mechanism for delegating authorization to a
@@ -349,7 +362,7 @@ can also be used in combination with introspection, allowing the token itself
 to carry one class of information and the introspection response to carry
 another.
 
-Some token formats, such as Macaroons and Biscuits, allow for
+Some token formats, such as Macaroons {{MACAROON}} and Biscuits {{BISCUIT}}, allow for
 the RS to derive sub-tokens without having to call the AS
 as described in {{token-chaining}}.
 
@@ -826,9 +839,9 @@ Reference
 |--- |--- |--- |--- |
 |`jwt-signed`|Active   | JSON Web Token, signed with JWS | {{JWT}} |
 |`jwt-encrypted`|Active   | JSON Web Token, encrypted with JWE | {{JWT}} |
-|`macaroon`|Active   | Macaroon |  |
-|`biscuit`|Active   | Biscuit |  |
-|`zcap`|Active   | ZCAP |  |
+|`macaroon`|Active   | Macaroon | {{MACAROON}} |
+|`biscuit`|Active   | Biscuit | {{BISCUIT}} |
+|`zcap`|Active   | ZCAP | {{ZCAPLD}} |
 
 ## Token Introspection Registry {#IANA-token-introspection}
 
