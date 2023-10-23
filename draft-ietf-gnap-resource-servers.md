@@ -1,6 +1,6 @@
 ---
 title: 'Grant Negotiation and Authorization Protocol Resource Server Connections'
-docname: draft-ietf-gnap-resource-servers-03
+docname: draft-ietf-gnap-resource-servers-04
 category: std
 
 ipr: trust200902
@@ -1280,6 +1280,16 @@ software can gain information about the resource being protected without accessi
 --- back
 
 # Document History {#history}
+
+- -04
+    - Editorial cleanup.
+    - Updated IANA requirements, including "specification required" registration.
+    - Added privacy and security considerations.
+    - Clarified and expanded token introspection request and response.
+    - Clarified and expanded resource set registration request and response, include example of use of resource reference.
+    - Updated discovery.
+    - Allow optional tokens on RS-facing API requests.
+    - Tighter controls over derived tokens.
 
 - -03
     - Added token model.
