@@ -331,22 +331,30 @@ does not define a specific grant identifier to be conveyed between any parties i
 Only the AS needs to keep an explicit connection between an issued access token and the
 parent grant that issued it.
 
-### Continuation Access Token
+### AS-Specific Access Tokens
 
-When an access token is used for the grant continuation API defined in {{Section 5 of GNAP}},
-the AS needs to be able to separate this access token from others usable at RS's. The AS can
+When an access token is used for the grant continuation API defined in {{Section 5 of GNAP}} (the continuation access token)
+or the token management API defined in {{Section 6 of GNAP}} (the token management access token),
+the AS needs to be able to separate these access tokens from others usable at RS's. The AS can
 do this through the use of a flag on the access token data structure, by using a special internal
-access right, or any other means at its disposal.
+access right, or any other means at its disposal. Just like other access tokens in GNAP,
+the contents of these AS-specific access tokens are opaque to the client. Unlike other access tokens,
+the contents of these AS-specific access tokens are also opaque to the RS.
 
-A client instance will need to store continuation access tokens separately from access tokens
-used at the RS in order to keep them from being confused with each other and used at the
+A client instance MUST take steps to differentiate these special-purpose access tokens from
+access tokens used at RS's.
+To facilitate this, a client instance can store AS-specific access tokens separately from
+other access tokens in order to keep them from being confused with each other and used at the
 wrong endpoints.
 
 The client instance is given continuation access tokens only as part of the `continue` field
 of the grant response in {{Section 3.1 of GNAP}}.
+The client instance is given token management access tokens only as part of the `manage` field
+of the grant response in {{Section 3.1.2 of GNAP}}.
 
-An RS should never see a continuation access token, so any attempts to process one should
-fail.
+An RS should never see an AS-specific access token, so any attempts to process one MUST
+fail. When introspection is used, the AS MUST NOT return an `active` value of `true` for
+AS-specific access tokens to the RS.
 
 ## Access Token Formats {#token-format}
 
