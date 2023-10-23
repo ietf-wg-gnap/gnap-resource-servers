@@ -457,7 +457,14 @@ of GNAP, described in {{GNAP}}. In the protocols defined here,
 this takes the form of the resource server identifying itself using a `key` field or
 by passing an instance identifier directly.
 
-~~~
+~~~ http-message
+POST /continue HTTP/1.1
+Host: server.example.com
+Authorization: GNAP 80UPRY5NM33OMUKMKSKU
+Signature-Input: sig1=...
+Signature: sig1=...
+Content-Type: application/json
+
 "resource_server": {
     "key": {
         "proof": "httpsig",
@@ -474,13 +481,38 @@ by passing an instance identifier directly.
 
 or by reference:
 
-~~~
-"resource_server": "7C7C4AZ9KHRS6X63AJAO"
+~~~ http-message
+POST /continue HTTP/1.1
+Host: server.example.com
+Signature-Input: sig1=...
+Signature: sig1=...
+Content-Type: application/json
+
+{
+    "resource_server": "7C7C4AZ9KHRS6X63AJAO"
+}
 ~~~
 
 The AS MAY require an RS to pre-register its keys
 or could allow calls from arbitrary keys in a trust-on-first-use
 model.
+
+The AS MAY issue access tokens to the RS for protecting the RS-facing
+API endpoints. If such tokens are issued, the RS MUST present them
+to the RS-facing API endpoints along with the RS authentication.
+
+~~~ http-message
+POST /continue HTTP/1.1
+Host: server.example.com
+Authorization: GNAP 80UPRY5NM33OMUKMKSKU
+Signature-Input: sig1=...
+Signature: sig1=...
+Content-Type: application/json
+
+{
+    "resource_server": "7C7C4AZ9KHRS6X63AJAO"
+}
+~~~
 
 ## Token Introspection {#introspection}
 
