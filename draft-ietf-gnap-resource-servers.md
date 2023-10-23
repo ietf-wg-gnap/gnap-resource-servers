@@ -528,7 +528,7 @@ resource_server (string or object):
 
 access (array of strings/objects):
 : OPTIONAL. The minimum access rights required to fulfill the request. This MUST be in the
-    format described in the Resource Access Rights section of {{GNAP}}.
+    format described in {{Section 8 of GNAP}}.
 
 ~~~
 POST /introspect HTTP/1.1
@@ -545,13 +545,20 @@ Digest: sha256=...
 }
 ~~~
 
-The AS MUST validate the access token value and determine if the token is active. An
-active access token is defined as a token that
+The AS MUST validate the access token value and determine if the token is active.
+The parameters of the request provide a context for the AS to evaluate the access token,
+and the AS MUST take all provided parameters into account when evaluating if the token is active.
+If the AS is unable to process part of the request, such as not understanding part of
+the `access` field presented, the AS MUST NOT indicate the token as active.
+
+An active access token is defined as a token that
 
 - was issued by the processing AS,
 - has not been revoked,
-- has not expired, and
-- is appropriate for presentation at the identified RS.
+- has not expired,
+- is bound using the `proof` method indicated,
+- is appropriate for presentation at the identified RS, and
+- is appropriate for the `access` indicated (if present),
 
 The AS responds with a data structure describing the token's
 current state and any information the RS would need to validate the
@@ -566,14 +573,15 @@ active (boolean):
     set to `false` and other fields are omitted.
 
 If the access token is active, additional fields from the single access token
-response structure defined in {{GNAP}} are included. In
+response structure defined in {{Section 3.2.1 of GNAP}} are included. In
 particular, these include the following:
 
 access (array of strings/objects):
 : REQUIRED. The access rights associated with this access token. This MUST be in the
-    format described in the Resource Access Rights section of {{GNAP}}.
+    format described in the {{Section 8 of GNAP}}.
     This array MAY be filtered or otherwise limited for consumption by the identified RS, including
-    being an empty array.
+    being an empty array, indicating that the token has no explicit access rights that
+    can be disclosed to the RS.
 
 key (object/string):
 : REQUIRED if the token is bound. The key bound to the access token, to allow the RS
@@ -632,6 +640,12 @@ Cache-Control: no-store
     }
 }
 ~~~
+
+When processing the results of the introspection response, the RS MUST determine the
+appropriate course of action. For instance, if the RS determines that the access token's
+access rights are not sufficient for the request to which the token was attached, the RS
+can return an error or a public resource, as appropriate for the RS.
+In all cases, the final determination of the response is at the discretion of the RS.
 
 ## Registering a Resource Set {#rs-register-resource-handle}
 
