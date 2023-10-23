@@ -1110,22 +1110,175 @@ The table below contains the initial contents of the GNAP RS-Facing Discovery Re
 
 # Security Considerations {#Security}
 
-\[\[ TBD: There are a lot of security considerations to add. \]\]
+In addition to the normative requirements in this document and in {{GNAP}}, implementors are
+strongly encouraged to consider these additional security considerations in implementations
+and deployments of GNAP.
 
-All requests have to be over TLS or equivalent as per {{BCP195}}. Many handles act as
-shared secrets, though they can be combined with a requirement to
-provide proof of a key as well.
+## TLS Protection in Transit {#security-tls}
 
+All requests in GNAP made over untrusted network connections have to be made over TLS as outlined in {{BCP195}}
+to protect the contents of the request and response from manipulation and interception by an attacker.
+This includes all requests from a client instance to the RS and all requests from the RS to an AS.
+
+## Token Validation {#security-token-validation}
+
+The RS has a responsibility to validate the incoming access token in a manner consistent with its deployment.
+For self-contained stateless tokens such as those described in {{token-format}}, this consists of actions such
+as validating the token's signature and ensuring the relevant fields and results are appropriate for the
+request being made. For reference-style tokens or tokens that are otherwise opaque to the RS, the token introspection
+RS-facing API can be used to provide updated information about the state of the token, as described in {{introspection}}.
+
+The RS needs to validate that a token:
+
+- Is intended for this RS (audience restriction)
+- Is presented using the appropriate key for the token (see also {{security-key-proof}})
+    Subject identification (the RS knows who authorized the token)
+    Issuer restriction (the RS knows who created the token, including signing a structure or providing introspection to prove this)
+
+
+Even though key proofing mechanisms have to cover the value of the token, validating the key proofing alone
+is not sufficient to protect a request to an RS.
+If an RS validates only the presentation method as described in {{security-key-proof}} without validating the
+token itself, an attacker could use a compromised key or a confused deputy to make arbitrary calls to the RS
+beyond what has been authorized by the RO.
+
+## Cacheing Token Validation Result {#security-token-cache}
+
+Since token validation can be an expensive process, requiring either cryptographic operations or network calls to an introspection
+service as described in {{introspection}}, an RS could cache the results of token validation for a particular token.
+The trade offs of using a cached validation for a token present an important decision space for implementors: relying on a cached validation result
+increases performance and lowers processing overhead, but it comes at the expense of the liveness and accuracy of the information
+in the cache. While a cached value is in use at the RS, an attacker could present a revoked token and have it accepted by the RS.
+
+As with any cache, the consistency of this cache can be managed in a variety of ways. One of the most simple
+methods is managing the lifetime of the cache in order to balance the performance and security properties.
+Too long of a cache, and an attacker has a larger window in which to use a revoked token. Too short of a window and
+the benefits of using the cache are diminished.
+It is also possible that an AS could send a proactive signal to the RS to invalidate revoked access tokens, though such a mechanism
+is outside the scope of this specification.
+
+## Key Proof Validation {#security-key-proof}
+
+For key-bound access tokens, the proofing method needs to be validated alongside the value of the token itself as described in {{security-token-validation}}.
+The process of validation is defined by the key proofing method, as described in {{Section 7.3 of GNAP}}.
+
+If the proofing method is not validated, an attacker could use a compromised token without access to the token's bound key.
+
+The RS also needs to ensure that the proofing method is appropriate for the key associated with the token, including any choice of
+algorithm or identifiers.
+
+The proofing should be validated independently on each request to the RS, particularly as aspects of the call could vary.
+As such, the RS should never cache the results of a proof validation from one message and apply it to a subsequent message.
+
+## Token Exfiltration
+
+Since the RS sees the token value, it is possible for a compromised RS to leak that value to an attacker.
+As such, the RS needs to protect token values as sensitive information and protect them from exfiltration.
+
+This is especially problematic with bearer tokens and tokens bound to a shared key, since an RS has access
+to all information necessary to create a new, valid request using the token in question.
+
+## Token Re-Use by an RS {#security-token-reuse-by-rs}
+
+If the access token is a bearer token, or the RS has access to the key material needed to present the token,
+the RS could be tricked into re-using an access token presented to it by a client. While it is possible to build
+a system that makes use of this artifact as a feature, it is safer to exchange the incoming access token for
+another contextual token for use by the RS, as described in {{token-chaining}}. This access token can be bound
+to the RS's own keys and limited to access needed by the RS, instead of the full set of rights associated with
+the token issued to the client instance.
+
+## Token Format Considerations
+
+With formatted tokens, the format of the token is likely to have its own considerations, and the RS needs
+to follow any such considerations during the token validation process. The application and scope of
+these considerations is specific to the format and outside the scope of this specification.
+
+## Over-sharing Token Contents
+
+The contents of the access token model divulge to the RS information about the access token's context and rights.
+This is true whether the contents are parsed from the token itself or sent in an introspection response.
+
+It's likely that every RS does not need to know all details of the token model, especially in systems where
+a single access token is usable across multiple RS's. An attacker could use this to gain information about
+the larger system by compromising only one RS. By limiting the information available to only
+that which is relevant to a specific RS, such as using a limited introspection reply as defined in {{introspection}},
+a system can follow a principle of least disclosure to each RS.
+
+## Resource References
+
+Resource references, as returned by the protocol in {{rs-register-resource-handle}}, are intended to be opaque to
+both the RS and the client. However, since they are under the control of the AS, the AS can put whatever content
+it wants into the reference value. This value could unintentionally disclose system structure or other internal
+details if it processed by an unintended party. Furthermore, such patterns could lead to the client software and
+RS depending on certain structures being present in the reference value, which diminishes the separation of concerns
+of the different roles in a GNAP system.
+
+To mitigate this, the AS should only use fully random or encrypted values for resource references.
+
+## Token Re-Issuance From an Untrusted AS
+
+It is possible for an attacker's client instance to issue its own tokens to another client instance, acting as
+an AS that the second client instance has chosen to trust. If the token is a bearer token or the re-issuance
+is bound using an AS-provided key, the target client instance will not be able to tell that the token was originally
+issued by the valid AS. This process allows an attacker to insert their own session and rights into an unsuspecting
+client instance, in the guise of a token valid for the attacker that appears to have been issued to the target
+client instance on behalf of its own RO.
+
+This attack is predicated on a misconfiguration with the targeted client, as it has been configured to get tokens
+from the attacker's AS and use those tokens with the target RS, which has no association with the attacker's AS.
+However, since the token is ultimately coming from the trusted AS, and is being presented with a valid key,
+the RS has no way of telling that the token was passed through an intermediary.
+
+To mitigate this, the RS can publish its association with the trusted AS through either discovery or documentation.
+Therefore, a client properly following this association would only go directly to the trusted RS directly for
+access tokens for the RS.
+
+Furthermore, limiting the use of bearer tokens and AS-provided keys to only highly trusted AS's and limited circumstances
+prevents the attacker from being able to willingly exfiltrate their token to an unsuspecting client instance.
+
+## Introspection of Token Keys
+
+The introspection response defined in {{introspection}} provides a means for the AS to tell the RS the key
+material needed to validate the key proof of the request. Capture of the introspection response can expose
+these security keys to an attacker. In the case of asymmetric cryptography, only the public key is exposed,
+and the token cannot be re-used by the attacker based on this result alone. This could potentially divulge
+information about the client instance that was unknown otherwise.
+
+If an access token is bound to a symmetric key, the RS will need access to the full key value in order to validate
+the key proof of the request, as described in {{security-key-proof}}. However, divulging the key
+material to the RS also gives the RS the ability to create a new request with the token.
+In this circumstance, the RS is under similar risk of token exfiltration and
+re-use as a bearer token, as described in {{security-token-reuse-by-rs}}. Consequently, symmetric
+keys should only be used in systems where the RS can be fully trusted to not create a new request with
+tokens presented to it.
 
 # Privacy Considerations {#Privacy}
 
-\[\[ TBD: There are a lot of privacy considerations to add. \]\]
+## Token Contents
 
-When introspection is used, the AS is made aware of a particular token being used at a particular AS, and the
-AS would not otherwise have insight into this.
+The contents of the access token could potentially contain personal information about the end-user, RO, or other parties.
+This is true whether the contents are parsed from the token itself or sent in an introspection response.
+
+While an RS will sometimes need this information for processing, it's often the case that an RS is exposed to these
+details only in passing, and not intentionally. For example, disclosure of a medical record number in the contents
+of an access token usable for both medial and non-medical APIs.
+
+To mitigate this, the a limited token introspection response can be used, as defined in {{introspection}}.
+
+## Token Use Disclosure through Introspection
+
+When introspection is used by an RS, the AS is made aware of a particular token being used at a particular RS.
+When the RS is a separate system, the AS would not otherwise have insight into this action. This can potentially
+lead to the AS learning about patterns and actions of particular end users by watching which RS's are accessed
+and when.
+
+## Mapping a User to an AS
 
 When the client instance receives information about the protecting AS from an RS, this can be used to
-derive information about the resources being protected without releasing the resources themselves.
+derive information about the resources being protected without releasing the resources themselves. For example,
+if a medical record is protected by a personal AS, an untrusted client could call an RS to discover the location
+of the AS protecting the record. Since the AS is tied strongly to a single RO, the untrusted and unauthorized client
+software can gain information about the resource being protected without accessing the record itself.
 
 --- back
 
