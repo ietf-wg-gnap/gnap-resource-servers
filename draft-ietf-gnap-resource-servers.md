@@ -776,6 +776,8 @@ value in the "existing_access_token" field.
 Since the RS is acting as a client instance,
 the RS MUST identify itself with its own key in the `client` field and sign the
 request just as any client instance would, as described in {{authentication}}.
+The AS MUST determine that the token being presented is appropriate for use
+at the RS making the token chaining request.
 
 ~~~
 POST /tx HTTP/1.1
