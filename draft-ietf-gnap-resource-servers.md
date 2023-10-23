@@ -64,38 +64,35 @@ informative:
 
 GNAP defines a mechanism for delegating authorization to a
 piece of software, and conveying that delegation to the software.
-This extension defines methods for resource servers (RS) to communicate
+This extension defines methods for resource servers (RS) to connect
 with authorization servers (AS) in an interoperable fashion.
 
 --- middle
 
 # Introduction
 
-The core GNAP protocol does not define any one specific mechanism
-for the resource server (RS) to communicate with the authorization
-server (AS), allowing the connection between these components
-to be solved orthogonally to the core protocol's concerns. For example,
-the RS and AS roles could be fulfilled by the same piece of software with
-common storage, obviating the need for any connecting protocol. However,
-it is often desirable to have the RS and AS communicate at runtime
-for a variety of purposes, including allowing the RS to validate and
-understand the rights and privileges associated with a grant of
-access represented by an access token issued by the AS, or negotiating
-the capabilities of either party. These types of
-connections are particularly useful for connecting an AS and RS from
-different vendors, allowing interoperable distributed deployments
-of GNAP-protected systems.
+The core GNAP specification ({{GNAP}}) defines distinct roles for the authorization
+server (AS) and the resource server (RS). However, the core specification
+does not define how the RS answers important questions, such as whether
+a given access token is still valid or what set of access rights the access
+token is approved for.
 
-This specification defines several means for an RS and AS to
-communicate these aspects with each other, including structured
-access tokens and RS-facing APIs. This specification also discusses
-methods for an RS to derive a downstream token for calling another
-chained RS.
+While it's possible for the AS and RS to be tightly coupled, such as a single
+deployed server with a shared storage system, GNAP does not presume or require
+such a tight coupling. It is increasingly common for the AS and RS to be run
+and managed separately, particularly in cases where a single AS protects multiple
+RS's simultaneously.
+
+This specification defines a set of RS-facing APIs that an AS can make
+available for advanced loosely-coupled deployments. Additionally, this document
+defines a general-purpose model for access tokens, which can be used in
+structured, formatted access tokens or in the API. This specification also defines a method
+for an RS to derive a downstream token for calling another chained RS.
 
 The means of the authorization server issuing
 the access token to the client instance and the means of the client instance
 presenting the access token to the resource server are the subject of the
-GNAP core protocol specification {{GNAP}}.
+core GNAP specification {{GNAP}}.
 
 ## Terminology
 
@@ -103,7 +100,7 @@ GNAP core protocol specification {{GNAP}}.
 
 This document contains non-normative examples of partial and complete HTTP messages, JSON structures, URLs, query components, keys, and other elements. Some examples use a single trailing backslash `\` to indicate line wrapping for long values, as per {{!RFC8792}}. The `\` character and leading spaces on wrapped lines are not part of the value.
 
-Terminology specific to GNAP is defined in the terminology section of the core specification {{GNAP}}, and provides definitions for the protocol roles: Authorization Server (AS), Client, Resource Server (RS), Resource Owner (RO), End-user; as well as the protocol elements: Attribute, Access Token, Grant, Privilege, Protected Resource, Right, Subject, Subject Information. The same definitions are used in this document.
+Terminology specific to GNAP is defined in the terminology section of the core specification {{GNAP}}, and provides definitions for the protocol roles: authorization server (AS), client, resource server (RS), resource owner (RO), end user; as well as the protocol elements: attribute, access token, grant, privilege, protected resource, right, subject, subject information. The same definitions are used in this document.
 
 # Access Tokens {#structure}
 
