@@ -351,27 +351,34 @@ parent grant that issued it.
 ### AS-Specific Access Tokens
 
 When an access token is used for the grant continuation API defined in {{Section 5 of GNAP}} (the continuation access token)
-or the token management API defined in {{Section 6 of GNAP}} (the token management access token),
-the AS needs to be able to separate these access tokens from others usable at RS's. The AS can
+the token management API defined in {{Section 6 of GNAP}} (the token management access token),
+or the RS-facing API defined in {{rs-facing-api}} (the resource server management access token),
+the AS MUST separate these access tokens from others usable at RS's. The AS can
 do this through the use of a flag on the access token data structure, by using a special internal
 access right, or any other means at its disposal. Just like other access tokens in GNAP,
-the contents of these AS-specific access tokens are opaque to the client. Unlike other access tokens,
-the contents of these AS-specific access tokens are also opaque to the RS.
-
-A client instance MUST take steps to differentiate these special-purpose access tokens from
-access tokens used at RS's.
-To facilitate this, a client instance can store AS-specific access tokens separately from
-other access tokens in order to keep them from being confused with each other and used at the
-wrong endpoints.
+the contents of these AS-specific access tokens are opaque to the software presenting the token.
+Unlike other access tokens, the contents of these AS-specific access tokens are also opaque to the RS.
 
 The client instance is given continuation access tokens only as part of the `continue` field
 of the grant response in {{Section 3.1 of GNAP}}.
 The client instance is given token management access tokens only as part of the `manage` field
 of the grant response in {{Section 3.1.2 of GNAP}}.
+The means by which the RS is given resource server management access tokens is out of
+scope of this specification, but methods could include pre-configuration of the token value with
+the RS software or granting the access token through a standard GNAP process.
 
-An RS should never see an AS-specific access token, so any attempts to process one MUST
+For continuation access tokens and token management access tokens,
+a client instance MUST take steps to differentiate these special-purpose access tokens from
+access tokens used at RS's.
+To facilitate this, a client instance can store AS-specific access tokens separately from
+other access tokens in order to keep them from being confused with each other and used at the
+wrong endpoints.
+
+An RS should never see an AS-specific access token presented, so any attempts to process one MUST
 fail. When introspection is used, the AS MUST NOT return an `active` value of `true` for
-AS-specific access tokens to the RS.
+AS-specific access tokens to the RS. If an AS implements its protected endpoints in such a way
+as it uses token introspection internally, the AS MUST differentiate these AS-specific access tokens
+from those issued for use at an external RS.
 
 ## Access Token Formats {#token-format}
 
@@ -404,7 +411,7 @@ between the AS and RS in several places.
 In all places where the token format is listed explicitly, it MUST be one of the registered
 values in the GNAP Token Formats Registry {{IANA-token-format}}.
 
-# Resource-Server-Facing API
+# Resource-Server-Facing API {#rs-facing-api}
 
 To facilitate runtime and dynamic connections, the AS can offer an
 RS-Facing API consisting of one or more of the following optional
@@ -515,7 +522,8 @@ or could allow calls from arbitrary keys in a trust-on-first-use
 model.
 
 The AS MAY issue access tokens to the RS for protecting the RS-facing
-API endpoints. If such tokens are issued, the RS MUST present them
+API endpoints, called a resource server management token.
+If such tokens are issued, the RS MUST present them
 to the RS-facing API endpoints along with the RS authentication.
 
 ~~~ http-message
