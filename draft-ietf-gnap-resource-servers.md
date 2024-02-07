@@ -522,7 +522,7 @@ or could allow calls from arbitrary keys in a trust-on-first-use
 model.
 
 The AS MAY issue access tokens to the RS for protecting the RS-facing
-API endpoints, called a resource server management token.
+API endpoints, called a resource server management access token.
 If such tokens are issued, the RS MUST present them
 to the RS-facing API endpoints along with the RS authentication.
 
