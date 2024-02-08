@@ -839,7 +839,7 @@ additional access rights requested by the client instance.
 }
 ~~~
 
-## Error Responses {#errors}
+## Error Responses {#response-error}
 
 In the case of an error from the RS-facing API, the AS responds to the RS with an HTTP 400 (Bad Request)
 status code and a JSON object consisting of a single `error` field, which is either an object or a string.
@@ -1187,17 +1187,8 @@ Specification document(s):
 
 |Error|Specification document(s)|
 |invalid_request|{{response-error}} of {{&SELF}}|
-|invalid_client|{{response-error}} of {{&SELF}}|
-|invalid_interaction|{{response-error}} of {{&SELF}}|
-|invalid_flag|{{response-error}} of {{&SELF}}|
-|invalid_rotation|{{response-error}} of {{&SELF}}|
-|key_rotation_not_supported|{{response-error}} of {{&SELF}}|
-|invalid_continuation|{{response-error}} of {{&SELF}}|
-|user_denied|{{response-error}} of {{&SELF}}|
-|request_denied|{{response-error}} of {{&SELF}}|
-|unknown_interaction|{{response-error}} of {{&SELF}}|
-|too_fast|{{response-error}} of {{&SELF}}|
-|too_many_attempts|{{response-error}} of {{&SELF}}|
+|invalid_resource_server|{{response-error}} of {{&SELF}}|
+|invalid_access|{{response-error}} of {{&SELF}}|
 
 # Security Considerations {#Security}
 
