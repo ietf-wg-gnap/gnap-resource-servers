@@ -517,6 +517,8 @@ Content-Type: application/json
 }
 ~~~
 
+The means by which an RS's keys are made known to the AS are out
+of scope of this specification.
 The AS MAY require an RS to pre-register its keys
 or could allow calls from arbitrary keys in a trust-on-first-use
 model.
@@ -1256,6 +1258,29 @@ In this circumstance, the RS is under similar risk of token exfiltration and
 re-use as a bearer token, as described in {{security-token-reuse-by-rs}}. Consequently, symmetric
 keys should only be used in systems where the RS can be fully trusted to not create a new request with
 tokens presented to it.
+
+## RS Registration and Management {#security-rs-registration}
+
+Most functions of the RS-facing API in {{rs-facing-api}} are protected by requiring the RS to
+present proof of a signing key along with the request, in order to identify the RS making the
+call, potentially coupled with an AS-specific access token.
+This practice allows the AS to differentially respond to API calls to different RS's, such as
+answering introspection calls with only the access rights relevant to a given RS instead of
+all access rights an access token could be good for.
+
+While the means by which an RS and its keys become known to the AS is out of scope for this
+specification, it is anticipated that common practice will be to statically register an
+RS, allowing it to protect specific resources or certain classes of resources.
+Fundamentally, the RS can only offer the resources that it serves. However, a rogue AS could
+attempt to register a set of resources that mimics a different RS in order to solicit an access
+token usable at the target RS. If the access token is a bearer token or is bound to a symmetric
+key that is known to the RS, then the attacker's RS gains the ability and knowledge needed
+to use that token elsewhere.
+
+In some ecosystems, dynamic registration of an RS and its associated resources is feasible.
+In such systems, the identity of the RS could be conveyed by a URI passed in the `location` field
+of an access rights request, thereby allowing the AS to limit the view the RS has into the
+larger system.
 
 # Privacy Considerations {#Privacy}
 
