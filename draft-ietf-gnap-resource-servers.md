@@ -466,7 +466,10 @@ key_proofs_supported (array of strings)
 : A list of the AS's supported key
     proofing mechanisms. The values of this list correspond to possible
     values of the `proof` field of the key section of the request.
+    Values MUST be in the GNAP Key Proofing Methods registry.
     OPTIONAL.
+
+Additional fields are defined in the GNAP RS-Facing Discovery Document Fields registry {{IANA-rs-discovery}}.
 
 ## Protecting RS requests to the AS {#authentication}
 
@@ -583,6 +586,7 @@ access_token (string):
 
 proof (string):
 : RECOMMENDED. The proofing method used by the client instance to bind the token to the RS request.
+    The value MUST be in the GNAP Key Proofing Methods registry.
 
 resource_server (string or object):
 : REQUIRED. The identification used to authenticate the resource server making this call, either
@@ -591,6 +595,8 @@ resource_server (string or object):
 access (array of strings/objects):
 : OPTIONAL. The minimum access rights required to fulfill the request. This MUST be in the
     format described in {{Section 8 of GNAP}}.
+
+Additional fields are defined in the GNAP Token Introspection Request registry {{IANA-token-introspection-request}}.
 
 ~~~
 POST /introspect HTTP/1.1
@@ -677,6 +683,8 @@ iss (string):
 instance_id (string):
 : OPTIONAL. The instance identifier of the client instance that the token was issued to.
 
+Additional fields are defined in the GNAP Token Introspection Response registry {{IANA-token-introspection}}.
+
 The response MAY include any additional fields defined in an access
 token response and MUST NOT include the access token `value` itself.
 
@@ -736,6 +744,8 @@ token_introspection_required (boolean):
     to make an introspection request for tokens relating to this resource set. If the AS does not
     support token introspection for this RS, the AS MUST return an error to the RS.
 
+Additional fields are defined in the GNAP Resource Set Registration Request registry {{IANA-resource-registration-request}}.
+
 The RS MUST identify itself with its own key and sign the
 request.
 
@@ -790,6 +800,8 @@ instance_id (string):
 introspection_endpoint (string):
 : OPTIONAL. The introspection endpoint of this AS, used to allow the RS to perform
     token introspection. See {{introspection}}.
+
+Additional fields are defined in the GNAP Resource Set Registration Response Registry {{IANA-resource-registration-response}}.
 
 ~~~
 HTTP/1.1 200 OK
@@ -939,14 +951,14 @@ repeat this process as necessary for calling further RS's.
 
 # IANA Considerations {#IANA}
 
-IANA is requested to perform the following actions.
+IANA is requested to add values to existing registries and to create 5 registries in the Grant Negotiation and Authorization Protocol registry.
 
 ## Well-Known URI {#IANA-well-known}
 
-The "gnap" URI suffix is registered into the Well-Known URIs Registry.
+The "gnap-as-rs" URI suffix is registered into the Well-Known URIs Registry to support RS-facing discovery of the AS.
 
 URI Suffix:
-: gnap
+: gnap-as-rs
 
 Change Controller:
 : IETF
@@ -957,8 +969,20 @@ Specification Document:
 Status:
 : Permanent
 
+## GNAP Grant Request Parameters {#IANA-grant-request}
 
-## Token Formats Registry {#IANA-token-format}
+The following parameter is registered into the GNAP Grant Request Parameters registry:
+
+Name:
+: `existing_access_token`
+
+Type:
+: string
+
+Specification document(s):
+: {{token-chaining}} of {{&SELF}}
+
+## GNAP Token Formats Registry {#IANA-token-format}
 
 This document defines a GNAP token format, for which IANA is asked to create and maintain a new registry titled "GNAP Token Formats". Initial values for this registry are given in {{IANA-token-format-contents}}. Future assignments and modifications to existing assignment are to be made through the Specification Required registration policy {{?RFC8126}}.
 
@@ -978,7 +1002,7 @@ Description
 : Human-readable description of the access token format.
 
 Reference
-: The specification that defines the token.
+: The specification that defines the token format.
 
 ### Initial Registry Contents {#IANA-token-format-contents}
 
@@ -990,9 +1014,38 @@ Reference
 |`biscuit`|Active   | Biscuit | {{BISCUIT}} |
 |`zcap`|Active   | ZCAP | {{ZCAPLD}} |
 
-## Token Introspection Registry {#IANA-token-introspection}
+## GNAP Token Introspection Request Registry {#IANA-token-introspection-request}
 
-This document defines GNAP token introspection, for which IANA is asked to create and maintain a new registry titled "GNAP Token Introspection". Initial values for this registry are given in {{IANA-token-introspection-contents}}. Future assignments and modifications to existing assignment are to be made through the Specification Required registration policy {{?RFC8126}}.
+This document defines GNAP token introspection, for which IANA is asked to create and maintain a new registry titled "GNAP Token Introspection Request". Initial values for this registry are given in {{IANA-token-introspection-request-contents}}. Future assignments and modifications to existing assignment are to be made through the Specification Required registration policy {{?RFC8126}}.
+
+The Designated Expert (DE) is expected to ensure that all registrations follow the template presented in {{IANA-token-introspection-request-template}}.
+The DE is expected to ensure that the claim's definition is sufficiently orthogonal to other claims defined in the registry so as avoid overlapping functionality.
+The DE is expected to ensure that the claim's definition specifies the syntax and semantics of the claim in sufficient detail to allow for the AS and RS to be able to communicate the token values.
+
+### Registry Template {#IANA-token-introspection-request-template}
+
+Name
+: The name of the claim.
+
+Type
+: The JSON data type of the claim value.
+
+Reference
+: The specification that defines the token.
+
+### Initial Registry Contents {#IANA-token-introspection-request-contents}
+
+The table below contains the initial contents of the GNAP Token Introspection Registry.
+
+|Name|Type|Reference|
+|access_token|string| {{introspection}} of {{&SELF}}|
+|proof|string| {{introspection}} of {{&SELF}}|
+|resource_server|object/string|  {{introspection}} of {{&SELF}}|
+|access|array of strings/objects| {{introspection}} of {{&SELF}}|
+
+## GNAP Token Introspection Response Registry {#IANA-token-introspection}
+
+This document defines GNAP token introspection, for which IANA is asked to create and maintain a new registry titled "GNAP Token Introspection Response". Initial values for this registry are given in {{IANA-token-introspection-contents}}. Future assignments and modifications to existing assignment are to be made through the Specification Required registration policy {{?RFC8126}}.
 
 The Designated Expert (DE) is expected to ensure that all registrations follow the template presented in {{IANA-token-introspection-template}}.
 The DE is expected to ensure that the claim's definition is sufficiently orthogonal to other claims defined in the registry so as avoid overlapping functionality.
@@ -1026,7 +1079,7 @@ The table below contains the initial contents of the GNAP Token Introspection Re
 |iss|string| {{introspection}} of {{&SELF}}|
 |instance_id|string| {{introspection}} of {{&SELF}}|
 
-## Resource Set Registration Request Parameters {#IANA-resource-registration-request}
+## GNAP Resource Set Registration Request Parameters {#IANA-resource-registration-request}
 
 This document defines a means to register a resource set for a GNAP AS, for which IANA is asked to create and maintain a new registry titled "GNAP Resource Set Registration Request Parameters". Initial values for this registry are given in {{IANA-resource-registration-request-contents}}. Future assignments and modifications to existing assignment are to be made through the Expert Review registration policy {{?RFC8126}}.
 
@@ -1055,7 +1108,7 @@ The table below contains the initial contents of the GNAP Resource Set Registrat
 |token_formats_supported|string| {{rs-register-resource-handle}} of {{&SELF}}|
 |token_introspection_required|boolean| {{rs-register-resource-handle}} of {{&SELF}}|
 
-## Resource Set Registration Response Parameters {#IANA-resource-registration-response}
+## GNAP Resource Set Registration Response Parameters {#IANA-resource-registration-response}
 
 This document defines a means to register a resource set for a GNAP AS, for which IANA is asked to create and maintain a new registry titled "GNAP Resource Set Registration Response Parameters". Initial values for this registry are given in {{IANA-resource-registration-response-contents}}. Future assignments and modifications to existing assignment are to be made through the Expert Review registration policy {{?RFC8126}}.
 
@@ -1083,9 +1136,9 @@ The table below contains the initial contents of the GNAP Resource Set Registrat
 |instance_id| string| {{rs-register-resource-handle}} of {{&SELF}}|
 |introspection_endpoint|string| {{rs-register-resource-handle}} of {{&SELF}}|
 
-## RS-Facing Discovery {#IANA-rs-discovery}
+## GNAP RS-Facing Discovery Document Fields {#IANA-rs-discovery}
 
-This document defines a means to for a GNAP AS to be discovered by a GNAP RS, for which IANA is asked to create and maintain a new registry titled "GNAP RS-Facing Discovery". Initial values for this registry are given in {{IANA-rs-discovery-contents}}. Future assignments and modifications to existing assignment are to be made through the Expert Review registration policy {{?RFC8126}}.
+This document defines a means to for a GNAP AS to be discovered by a GNAP RS, for which IANA is asked to create and maintain a new registry titled "GNAP RS-Facing Discovery Document Fields". Initial values for this registry are given in {{IANA-rs-discovery-contents}}. Future assignments and modifications to existing assignment are to be made through the Expert Review registration policy {{?RFC8126}}.
 
 The Designated Expert (DE) is expected to ensure that all registrations follow the template presented in {{IANA-rs-discovery-template}}.
 The DE is expected to ensure that the claim's definition is sufficiently orthogonal to other claims defined in the registry so as avoid overlapping functionality.
