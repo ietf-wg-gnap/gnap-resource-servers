@@ -851,6 +851,56 @@ additional access rights requested by the client instance.
 }
 ~~~
 
+## Error Responses {#response-error}
+
+In the case of an error from the RS-facing API, the AS responds to the RS with an HTTP 400 (Bad Request)
+status code and a JSON object consisting of a single `error` field, which is either an object or a string.
+
+When returned as a string, the error value is the error code:
+
+~~~
+{
+    error: "invalid_access"
+}
+~~~
+
+
+When returned as an object, the error object contains the following fields:
+
+`code` (string):
+:   A single ASCII error code defining the error.
+    REQUIRED.
+
+`description` (string):
+:   A human-readable string description of the error intended for the
+    developer of the client.
+    OPTIONAL.
+
+~~~
+{
+  "error": {
+    "code": "invalid_access",
+    "description": "Access to 'foo' is not permitted for this RS."
+  }
+}
+~~~
+
+This specification defines the following error code values:
+
+`"invalid_request"`:
+: The request is missing a required parameter, includes an
+    invalid parameter value or is otherwise malformed.
+
+`"invalid_resource_server"`:
+: The request was made from an RS that was not recognized
+    or allowed by the AS, or the RS's signature validation failed.
+
+`"invalid_access"`
+: The RS is not permitted to register or introspect for the requested "access" value.
+
+Additional error codes can be defined in the [GNAP RS-Facing Error Codes Registry](#IANA-error-code).
+
+
 # Deriving a downstream token {#token-chaining}
 
 Some architectures require an RS to act as a client instance and use a derived access
@@ -1165,6 +1215,33 @@ The table below contains the initial contents of the GNAP RS-Facing Discovery Re
 |resource_registration_endpoint|string| {{discovery}} of {{&SELF}}|
 |grant_request_endpoint|string| {{discovery}} of {{&SELF}}|
 |key_proofs_supported|array of strings| {{discovery}} of {{&SELF}}|
+
+## GNAP RS-Facing Error Codes {#IANA-error-code}
+
+This document defines a set of errors that the AS can return to the RS, for which IANA is asked to create and maintain a new registry titled "GNAP RS-Facing Error Codes". Initial values for this registry are given in {{IANA-error-code-contents}}. Future assignments and modifications to existing assignment are to be made through the Specification Required registration policy {{?RFC8126}}.
+
+The DE is expected to ensure that all registrations follow the template presented in {{IANA-error-code-template}}.
+The DE is expected to ensure that the error response is sufficiently unique from other errors to provide actionable information to the client instance.
+The DE is expected to ensure that the definition of the error response specifies all conditions in which the error response is returned, and what the client instance's expected action is.
+
+### Registration Template {#IANA-error-code-template}
+
+{: vspace="0"}
+Error:
+: A unique string code for the error.
+
+Specification document(s):
+: Reference to the document(s) that specify the
+    value, preferably including a URI that can be used
+    to retrieve a copy of the document(s). An indication of the
+    relevant sections may also be included but is not required.
+
+### Initial Contents {#IANA-error-code-contents}
+
+|Error|Specification document(s)|
+|invalid_request|{{response-error}} of {{&SELF}}|
+|invalid_resource_server|{{response-error}} of {{&SELF}}|
+|invalid_access|{{response-error}} of {{&SELF}}|
 
 # Security Considerations {#Security}
 
