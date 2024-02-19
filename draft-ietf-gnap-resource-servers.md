@@ -999,7 +999,27 @@ repeat this process as necessary for calling further RS's.
 
 # Acknowledgements {#Acknowledgements}
 
-(TODO: the ACK section should probably be split between the documents)
+The editors would like to thank the feedback of the following individuals for their reviews,
+implementations, and contributions:
+Aaron Parecki,
+Adrian Gropper,
+Andrii Deinega,
+Annabelle Backman,
+Dmitry Barinov,
+Fabien Imbault,
+Florian Helmschmidt,
+George Fletcher,
+Justin Richer,
+Kathleen Moriarty,
+Leif Johansson,
+Mike Varley,
+Nat Sakimura,
+Takahiko Kawasaki,
+Yaron Sheffer.
+
+Finally, the editors want to acknowledge the immense contributions of Aaron Parecki to the content
+of this document. We thank him for his insight, input, and hard work, without which GNAP would
+not have grown to what it is.
 
 # IANA Considerations {#IANA}
 
