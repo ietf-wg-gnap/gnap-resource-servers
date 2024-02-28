@@ -168,7 +168,7 @@ cases where the access token is a bearer token. For all tokens bound to a key, t
 be able to identify which key the token is bound to, otherwise an attacker could substitute their
 own key during presentation of the token. In the case of an asymmetric algorithm, the model for the
 AS and RS need only contain the public key, while the client instance will also need to know the private
-key in order to present the token appropriately. In the case of a symmetric algorithm, all parties
+key in order to present the token. In the case of a symmetric algorithm, all parties
 will need to either know or be able to derive the shared key.
 
 The source of this key information can vary depending on circumstance and deployment. For example, an AS
@@ -474,13 +474,11 @@ Additional fields are defined in the GNAP RS-Facing Discovery Document Fields re
 ## Protecting RS requests to the AS {#authentication}
 
 Unless otherwise specified, the RS MUST protect its calls to the AS using any of the signature
-methods defined by GNAP. This signing method MUST cover all of the appropriate
-portions of the HTTP request message, including any body elements, tokens, or
-headers required for functionality.
+methods defined by {{Section 7 of GNAP}}.
 
 The RS MAY present its keys by reference or by value in
 a similar fashion to a client instance calling the AS in the core protocol
-of GNAP, described in {{GNAP}}. In the protocols defined here,
+of GNAP, described in {{Section 7.1 of GNAP}}. In the protocols defined here,
 this takes the form of the resource server identifying itself using a `key` field or
 by passing an instance identifier directly.
 
@@ -551,7 +549,7 @@ to be used at one or more RSs. The AS can offer an introspection service
 to allow an RS to validate that a given access token:
 
 - has been issued by the AS
-- has not expired
+- is valid at the current time
 - has not been revoked
 - is appropriate for the RS identified in the call
 
