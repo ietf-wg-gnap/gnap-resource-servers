@@ -1,6 +1,6 @@
 ---
 title: 'Grant Negotiation and Authorization Protocol Resource Server Connections'
-docname: draft-ietf-gnap-resource-servers-05
+docname: draft-ietf-gnap-resource-servers-06
 category: std
 
 ipr: trust200902
@@ -1496,6 +1496,9 @@ not have grown to what it is.
 --- back
 
 # Document History {#history}
+
+- -06
+    - Editorial updates based on review feedback.
 
 - -05
     - Added discussion of access tokens used to call the RS-facing AS APIs.
