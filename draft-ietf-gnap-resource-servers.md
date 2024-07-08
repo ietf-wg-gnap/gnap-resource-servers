@@ -63,7 +63,7 @@ informative:
 --- abstract
 
 GNAP defines a mechanism for delegating authorization to a piece of
-software, and conveying the results and artifacts of that delegation
+software (the client), and conveying the results and artifacts of that delegation
 to the software.
 This extension defines methods for resource servers (RS) to connect
 with authorization servers (AS) in an interoperable fashion.
@@ -74,7 +74,7 @@ with authorization servers (AS) in an interoperable fashion.
 
 The core GNAP specification ({{GNAP}}) defines distinct roles for the authorization
 server (AS) and the resource server (RS). However, the core specification
-does not define how the RS answers important questions, such as whether
+does not define how the RS gets answers to important questions, such as whether
 a given access token is still valid or what set of access rights the access
 token is approved for.
 
@@ -114,10 +114,14 @@ consistent across all GNAP systems.
 
 ## General-purpose Access Token Model
 
+The core GNAP specification {{GNAP}} focuses on the relationship between the client and the AS. Since the access token
+is opaque to the client, the core specification does not define a token model. However, the AS will need to create
+tokens and the RS will need to understand tokens. To facilitate a level of structural interoperability, a common
+access token model is presented here.
 Access tokens represent a common set of aspects across different GNAP deployments. This list is not intended to be
 universal or comprehensive, but rather serves as guidance to implementers in developing
 data structures and associated systems across a GNAP deployment. These data structures are communicated
-between the AS and RS either by using a structured token or an API-like mechanism like token introspection.
+between the AS and RS either by using a structured token or an API-like mechanism like token introspection (see {{introspection}}).
 
 This general-purpose data model does not assume either approach, and in fact both can be used together
 to convey different pieces of information. Where possible, mappings to the {{JWT}} standard format
@@ -156,8 +160,8 @@ In a {{JWT}} formatted token or a token introspection response, this corresponds
 
 ### Audience
 
-The access token is intended for use at one or more RS's. The AS can identify those RS's
-to allow each RS to ensure that the token is not receiving a token intended for someone else.
+The access token is intended for use at one or more RS's. The AS can list a token's intended RS's
+to allow each RS to ensure that the RS is not receiving a token intended for someone else.
 The AS and RS have to agree on the nature of any audience identifiers represented by the token,
 but the URIs of the RS are a common pattern.
 
@@ -188,7 +192,7 @@ instance to use a different key for each request, or allows the AS to issue a ke
 to use with the particular token.
 
 In all cases, the key binding also includes a proofing mechanism, along with any parameters needed for that
-mechanism such as a signing or digest algorithm. If such information is not stored, an attacker could
+mechanism such as a signing or digest algorithm. If such information is not included with the proofing key, an attacker could
 present a token with a seemingly-valid key using an insecure and incorrect proofing mechanism.
 
 This value is conveyed to the client instance in the `key` field of the `access_token` response in {{Section 3.2 of GNAP}}.
@@ -1002,30 +1006,6 @@ The AS responds with a token for the downstream RS2 as described in
 repeat this process as necessary for calling further RS's.
 
 
-# Acknowledgements {#Acknowledgements}
-
-The editors would like to thank the feedback of the following individuals for their reviews,
-implementations, and contributions:
-Aaron Parecki,
-Adrian Gropper,
-Andrii Deinega,
-Annabelle Backman,
-Dmitry Barinov,
-Fabien Imbault,
-Florian Helmschmidt,
-George Fletcher,
-Justin Richer,
-Kathleen Moriarty,
-Leif Johansson,
-Mike Varley,
-Nat Sakimura,
-Takahiko Kawasaki,
-Yaron Sheffer.
-
-Finally, the editors want to acknowledge the immense contributions of Aaron Parecki to the content
-of this document. We thank him for his insight, input, and hard work, without which GNAP would
-not have grown to what it is.
-
 # IANA Considerations {#IANA}
 
 IANA is requested to add values to existing registries and to create 5 registries in the Grant Negotiation and Authorization Protocol registry.
@@ -1467,6 +1447,30 @@ derive information about the resources being protected without releasing the res
 if a medical record is protected by a personal AS, an untrusted client could call an RS to discover the location
 of the AS protecting the record. Since the AS is tied strongly to a single RO, the untrusted and unauthorized client
 software can gain information about the resource being protected without accessing the record itself.
+
+# Acknowledgements {#Acknowledgements}
+
+The editors would like to thank the feedback of the following individuals for their reviews,
+implementations, and contributions:
+Aaron Parecki,
+Adrian Gropper,
+Andrii Deinega,
+Annabelle Backman,
+Dmitry Barinov,
+Fabien Imbault,
+Florian Helmschmidt,
+George Fletcher,
+Justin Richer,
+Kathleen Moriarty,
+Leif Johansson,
+Mike Varley,
+Nat Sakimura,
+Takahiko Kawasaki,
+Yaron Sheffer.
+
+Finally, the editors want to acknowledge the immense contributions of Aaron Parecki to the content
+of this document. We thank him for his insight, input, and hard work, without which GNAP would
+not have grown to what it is.
 
 --- back
 
