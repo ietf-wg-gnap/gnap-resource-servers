@@ -1043,9 +1043,11 @@ Specification document(s):
 
 This document defines a GNAP token format, for which IANA is asked to create and maintain a new registry titled "GNAP Token Formats". Initial values for this registry are given in {{IANA-token-format-contents}}. Future assignments and modifications to existing assignment are to be made through the Specification Required registration policy {{?RFC8126}}.
 
-The Designated Expert (DE) is expected to ensure that all registrations follow the template presented in {{IANA-token-format-template}}.
-The DE is expected to ensure that the format's definition is sufficiently unique from other formats provided by existing parameters.
-The DE is expected to ensure that the format's definition specifies the format of the access token in sufficient detail to allow for the AS and RS to be able to communicate the token information.
+The Designated Expert (DE) is expected to ensure that:
+
+- all registrations follow the template presented in {{IANA-token-format-template}}.
+- the format's definition is sufficiently unique from other formats provided by existing parameters.
+- the format's definition specifies the format of the access token in sufficient detail to allow for the AS and RS to be able to communicate the token information.
 
 ### Registry Template {#IANA-token-format-template}
 
@@ -1070,14 +1072,17 @@ Reference
 |`macaroon`|Active   | Macaroon | {{MACAROON}} |
 |`biscuit`|Active   | Biscuit | {{BISCUIT}} |
 |`zcap`|Active   | ZCAP | {{ZCAPLD}} |
+{: title="Initial contents of the GNAP Token Formats Registry." }
 
 ## GNAP Token Introspection Request Registry {#IANA-token-introspection-request}
 
 This document defines GNAP token introspection, for which IANA is asked to create and maintain a new registry titled "GNAP Token Introspection Request". Initial values for this registry are given in {{IANA-token-introspection-request-contents}}. Future assignments and modifications to existing assignment are to be made through the Specification Required registration policy {{?RFC8126}}.
 
-The Designated Expert (DE) is expected to ensure that all registrations follow the template presented in {{IANA-token-introspection-request-template}}.
-The DE is expected to ensure that the claim's definition is sufficiently orthogonal to other claims defined in the registry so as avoid overlapping functionality.
-The DE is expected to ensure that the claim's definition specifies the syntax and semantics of the claim in sufficient detail to allow for the AS and RS to be able to communicate the token values.
+The Designated Expert (DE) is expected to ensure that:
+
+- all registrations follow the template presented in {{IANA-token-introspection-request-template}}.
+- the claim's definition is sufficiently orthogonal to other claims defined in the registry so as avoid overlapping functionality.
+- the claim's definition specifies the syntax and semantics of the claim in sufficient detail to allow for the AS and RS to be able to communicate the token values.
 
 ### Registry Template {#IANA-token-introspection-request-template}
 
@@ -1099,14 +1104,17 @@ The table below contains the initial contents of the GNAP Token Introspection Re
 |proof|string| {{introspection}} of {{&SELF}}|
 |resource_server|object/string|  {{introspection}} of {{&SELF}}|
 |access|array of strings/objects| {{introspection}} of {{&SELF}}|
+{: title="Initial contents of the GNAP Token Introspection Request Registry." }
 
 ## GNAP Token Introspection Response Registry {#IANA-token-introspection}
 
 This document defines GNAP token introspection, for which IANA is asked to create and maintain a new registry titled "GNAP Token Introspection Response". Initial values for this registry are given in {{IANA-token-introspection-contents}}. Future assignments and modifications to existing assignment are to be made through the Specification Required registration policy {{?RFC8126}}.
 
-The Designated Expert (DE) is expected to ensure that all registrations follow the template presented in {{IANA-token-introspection-template}}.
-The DE is expected to ensure that the claim's definition is sufficiently orthogonal to other claims defined in the registry so as avoid overlapping functionality.
-The DE is expected to ensure that the claim's definition specifies the syntax and semantics of the claim in sufficient detail to allow for the AS and RS to be able to communicate the token values.
+The Designated Expert (DE) is expected to ensure that:
+
+- all registrations follow the template presented in {{IANA-token-introspection-template}}.
+- the claim's definition is sufficiently orthogonal to other claims defined in the registry so as avoid overlapping functionality.
+- the claim's definition specifies the syntax and semantics of the claim in sufficient detail to allow for the AS and RS to be able to communicate the token values.
 
 ### Registry Template {#IANA-token-introspection-template}
 
@@ -1135,14 +1143,17 @@ The table below contains the initial contents of the GNAP Token Introspection Re
 |sub|string| {{introspection}} of {{&SELF}}|
 |iss|string| {{introspection}} of {{&SELF}}|
 |instance_id|string| {{introspection}} of {{&SELF}}|
+{: title="Initial contents of the GNAP Token Introspection Response Registry." }
 
-## GNAP Resource Set Registration Request Parameters {#IANA-resource-registration-request}
+## GNAP Resource Set Registration Request Parameters Registry {#IANA-resource-registration-request}
 
 This document defines a means to register a resource set for a GNAP AS, for which IANA is asked to create and maintain a new registry titled "GNAP Resource Set Registration Request Parameters". Initial values for this registry are given in {{IANA-resource-registration-request-contents}}. Future assignments and modifications to existing assignment are to be made through the Expert Review registration policy {{?RFC8126}}.
 
-The Designated Expert (DE) is expected to ensure that all registrations follow the template presented in {{IANA-resource-registration-request-template}}.
-The DE is expected to ensure that the parameter's definition is sufficiently orthogonal to other claims defined in the registry so as avoid overlapping functionality.
-The DE is expected to ensure that the parameter's definition specifies the syntax and semantics of the claim in sufficient detail to allow for the AS and RS to be able to communicate the resource set.
+The Designated Expert (DE) is expected to ensure that:
+
+- all registrations follow the template presented in {{IANA-resource-registration-request-template}}.
+- the parameter's definition is sufficiently orthogonal to other claims defined in the registry so as avoid overlapping functionality.
+- the parameter's definition specifies the syntax and semantics of the claim in sufficient detail to allow for the AS and RS to be able to communicate the resource set.
 
 ### Registry Template {#IANA-resource-registration-request-template}
 
@@ -1164,14 +1175,17 @@ The table below contains the initial contents of the GNAP Resource Set Registrat
 |resource_server| string or object| {{rs-register-resource-handle}} of {{&SELF}}|
 |token_formats_supported|string| {{rs-register-resource-handle}} of {{&SELF}}|
 |token_introspection_required|boolean| {{rs-register-resource-handle}} of {{&SELF}}|
+{: title="Initial contents of the GNAP Resource Set Registration Request Parameters Registry." }
 
 ## GNAP Resource Set Registration Response Parameters {#IANA-resource-registration-response}
 
 This document defines a means to register a resource set for a GNAP AS, for which IANA is asked to create and maintain a new registry titled "GNAP Resource Set Registration Response Parameters". Initial values for this registry are given in {{IANA-resource-registration-response-contents}}. Future assignments and modifications to existing assignment are to be made through the Expert Review registration policy {{?RFC8126}}.
 
-The Designated Expert (DE) is expected to ensure that all registrations follow the template presented in {{IANA-resource-registration-response-template}}.
-The DE is expected to ensure that the parameter's definition is sufficiently orthogonal to other claims defined in the registry so as avoid overlapping functionality.
-The DE is expected to ensure that the parameter's definition specifies the syntax and semantics of the claim in sufficient detail to allow for the AS and RS to be able to communicate the resource set.
+The Designated Expert (DE) is expected to ensure that:
+
+- all registrations follow the template presented in {{IANA-resource-registration-response-template}}.
+- the parameter's definition is sufficiently orthogonal to other claims defined in the registry so as avoid overlapping functionality.
+- the parameter's definition specifies the syntax and semantics of the claim in sufficient detail to allow for the AS and RS to be able to communicate the resource set.
 
 ### Registry Template {#IANA-resource-registration-response-template}
 
@@ -1192,14 +1206,17 @@ The table below contains the initial contents of the GNAP Resource Set Registrat
 |resource_reference|string| {{rs-register-resource-handle}} of {{&SELF}}|
 |instance_id| string| {{rs-register-resource-handle}} of {{&SELF}}|
 |introspection_endpoint|string| {{rs-register-resource-handle}} of {{&SELF}}|
+{: title="Initial contents of the GNAP Resource Set Registration Response Parameters Registry." }
 
 ## GNAP RS-Facing Discovery Document Fields {#IANA-rs-discovery}
 
 This document defines a means to for a GNAP AS to be discovered by a GNAP RS, for which IANA is asked to create and maintain a new registry titled "GNAP RS-Facing Discovery Document Fields". Initial values for this registry are given in {{IANA-rs-discovery-contents}}. Future assignments and modifications to existing assignment are to be made through the Expert Review registration policy {{?RFC8126}}.
 
-The Designated Expert (DE) is expected to ensure that all registrations follow the template presented in {{IANA-rs-discovery-template}}.
-The DE is expected to ensure that the claim's definition is sufficiently orthogonal to other claims defined in the registry so as avoid overlapping functionality.
-The DE is expected to ensure that the claim's definition specifies the syntax and semantics of the claim in sufficient detail to allow for RS to be able to communicate with the AS.
+The Designated Expert (DE) is expected to ensure that:
+
+- all registrations follow the template presented in {{IANA-rs-discovery-template}}.
+- the claim's definition is sufficiently orthogonal to other claims defined in the registry so as avoid overlapping functionality.
+- the claim's definition specifies the syntax and semantics of the claim in sufficient detail to allow for RS to be able to communicate with the AS.
 
 ### Registry Template {#IANA-rs-discovery-template}
 
@@ -1222,14 +1239,17 @@ The table below contains the initial contents of the GNAP RS-Facing Discovery Re
 |resource_registration_endpoint|string| {{discovery}} of {{&SELF}}|
 |grant_request_endpoint|string| {{discovery}} of {{&SELF}}|
 |key_proofs_supported|array of strings| {{discovery}} of {{&SELF}}|
+{: title="Initial contents of the GNAP RS-Facing Discovery Document Fields Registry." }
 
 ## GNAP RS-Facing Error Codes {#IANA-error-code}
 
 This document defines a set of errors that the AS can return to the RS, for which IANA is asked to create and maintain a new registry titled "GNAP RS-Facing Error Codes". Initial values for this registry are given in {{IANA-error-code-contents}}. Future assignments and modifications to existing assignment are to be made through the Specification Required registration policy {{?RFC8126}}.
 
-The DE is expected to ensure that all registrations follow the template presented in {{IANA-error-code-template}}.
-The DE is expected to ensure that the error response is sufficiently unique from other errors to provide actionable information to the client instance.
-The DE is expected to ensure that the definition of the error response specifies all conditions in which the error response is returned, and what the client instance's expected action is.
+The DE is expected to ensure that:
+
+- all registrations follow the template presented in {{IANA-error-code-template}}.
+- the error response is sufficiently unique from other errors to provide actionable information to the client instance.
+- the definition of the error response specifies all conditions in which the error response is returned, and what the client instance's expected action is.
 
 ### Registration Template {#IANA-error-code-template}
 
@@ -1249,6 +1269,7 @@ Specification document(s):
 |invalid_request|{{response-error}} of {{&SELF}}|
 |invalid_resource_server|{{response-error}} of {{&SELF}}|
 |invalid_access|{{response-error}} of {{&SELF}}|
+{: title="Initial contents of the GNAP RS-Facing Error Codes Registry." }
 
 # Security Considerations {#Security}
 
