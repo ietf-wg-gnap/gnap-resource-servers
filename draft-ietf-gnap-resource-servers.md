@@ -118,9 +118,10 @@ Access tokens represent a common set of aspects across different GNAP deployment
 universal or comprehensive, but rather serves as guidance to implementers in developing
 data structures and associated systems across a GNAP deployment. These data structures are communicated
 between the AS and RS either by using a structured token or an API-like mechanism like token introspection.
+
 This general-purpose data model does not assume either approach, and in fact both can be used together
-to convey different pieces of information. Where possible, mappings to concrete data fields in common standards
-understood by the RS are provided for each item in the model.
+to convey different pieces of information. Where possible, mappings to the {{JWT}} standard format
+are provided for each item in the model.
 
 ### Value
 
@@ -138,11 +139,15 @@ While the client software needs to be able to carry and present the access token
 value, the client software is never expected nor intended to be able to understand
 the token value itself.
 
+If structured tokens like {{JWT}} are used, the value of the token might not be stored by the AS. Instead,
+a token identifier can be used along with protection by an AS-generated signature to validate and
+identify an individual token.
+
 ### Issuer
 
-The access token is issued by the AS in a standard GNAP transaction. The AS will often
-need to identify itself in order to recognize tokens that it has issued, particularly
-in cases where tokens from multiple different AS's could be presented.
+The access token is issued by the AS as defined by {{GNAP}}. The AS will
+need to identify itself in order to allow an RS to recognize tokens that the AS has issued, particularly
+in cases where tokens from multiple different AS's could be presented to the same RS.
 
 This information is not usually conveyed directly to the client instance, since the client
 instance should know this information based on where it receives the token from.
@@ -1440,10 +1445,13 @@ The contents of the access token could potentially contain personal information 
 This is true whether the contents are parsed from the token itself or sent in an introspection response.
 
 While an RS will sometimes need this information for processing, it's often the case that an RS is exposed to these
-details only in passing, and not intentionally. For example, disclosure of a medical record number in the contents
-of an access token usable for both medial and non-medical APIs.
+details only in passing, and not intentionally. For example, consider a client that is issued an access token that is
+usable for both medical and non-medical APIs. If this access token contains a medical record number to facilitate the
+RS serving the medical API, then any RS for a non-medical API would also learn the user's medical record number
+in the process, even though that API has no need to make such a correlation.
 
-To mitigate this, the a limited token introspection response can be used, as defined in {{introspection}}.
+To mitigate this, a formatted token could contain separate sections targeted to different RS's to segregate data.
+Alternatively, token introspection can be used to limit the data returned to each RS, as defined in {{introspection}}.
 
 ## Token Use Disclosure through Introspection
 
