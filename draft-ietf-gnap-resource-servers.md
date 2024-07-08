@@ -62,8 +62,9 @@ informative:
 
 --- abstract
 
-GNAP defines a mechanism for delegating authorization to a
-piece of software, and conveying that delegation to the software.
+GNAP defines a mechanism for delegating authorization to a piece of
+software, and conveying the results and artifacts of that delegation
+to the software.
 This extension defines methods for resource servers (RS) to connect
 with authorization servers (AS) in an interoperable fashion.
 
@@ -86,7 +87,8 @@ RS's simultaneously.
 This specification defines a set of RS-facing APIs that an AS can make
 available for advanced loosely-coupled deployments. Additionally, this document
 defines a general-purpose model for access tokens, which can be used in
-structured, formatted access tokens or in the API. This specification also defines a method
+structured, formatted access tokens or in token introspection responses.
+This specification also defines a method
 for an RS to derive a downstream token for calling another chained RS.
 
 The means of the authorization server issuing
@@ -112,8 +114,8 @@ consistent across all GNAP systems.
 
 ## General-purpose Access Token Model
 
-Access tokens represent a common set of aspects across different GNAP deployments. This is not intended to be
-a universal or comprehensive list, but instead to provide guidance to implementors when developing
+Access tokens represent a common set of aspects across different GNAP deployments. This list is not intended to be
+universal or comprehensive, but rather serves as guidance to implementers in developing
 data structures and associated systems across a GNAP deployment. These data structures are communicated
 between the AS and RS either by using a structured token or an API-like mechanism like token introspection.
 This general-purpose data model does not assume either approach, and in fact both can be used together
@@ -166,12 +168,12 @@ possible RS's to present the token to.
 Access tokens in GNAP are bound to the client instance's registered or presented key, except in
 cases where the access token is a bearer token. For all tokens bound to a key, the AS and RS need to
 be able to identify which key the token is bound to, otherwise an attacker could substitute their
-own key during presentation of the token. In the case of an asymmetric algorithm, the model for the
-AS and RS need only contain the public key, while the client instance will also need to know the private
+own key during presentation of the token. In the case of an asymmetric algorithm, the
+AS and RS needs to know only the public key, while the client instance will also need to know the private
 key in order to present the token. In the case of a symmetric algorithm, all parties
 will need to either know or be able to derive the shared key.
 
-The source of this key information can vary depending on circumstance and deployment. For example, an AS
+The source of this key information can vary depending on deployment decisions. For example, an AS
 could decide that all tokens issued to a client instance are always bound to that client instance's current key.
 When the key needs to be dereferenced, the AS looks up the client instance to which the token was issued
 and finds the key information there.
@@ -199,9 +201,9 @@ GNAP access tokens can have multiple data flags associated with them that indica
 processing or considerations for the token. For example, whether the token is a bearer token,
 or should be expected to be durable across grant updates.
 
-The client can request a set of flags in the `access_token` request in {{GNAP}}.
+The client can request a set of flags using the `flags` field of the `access_token` grant request parameter in {{Section 2.1.1 of GNAP}}.
 
-These flags are conveyed from the AS to the client in the `flags` field of the `access_token` response in {{Section 3.2 of GNAP}}.
+These flags are conveyed from the AS to the client in the `flags` field of the `access_token` section of the grant response response in {{Section 3.2 of GNAP}}.
 
 For token introspection, flags are returned in the `flags` field of the response.
 
@@ -598,7 +600,7 @@ access (array of strings/objects):
 
 Additional fields are defined in the GNAP Token Introspection Request registry {{IANA-token-introspection-request}}.
 
-~~~
+~~~ http-message
 POST /introspect HTTP/1.1
 Host: server.example.com
 Content-Type: application/json
@@ -619,14 +621,14 @@ and the AS MUST take all provided parameters into account when evaluating if the
 If the AS is unable to process part of the request, such as not understanding part of
 the `access` field presented, the AS MUST NOT indicate the token as active.
 
-An active access token is defined as a token that
+An active access token is defined as a token that is all of the following:
 
 - was issued by the processing AS,
 - has not been revoked,
 - has not expired,
 - is bound using the `proof` method indicated,
 - is appropriate for presentation at the identified RS, and
-- is appropriate for the `access` indicated (if present),
+- is appropriate for the `access` indicated (if present).
 
 The AS responds with a data structure describing the token's
 current state and any information the RS would need to validate the
@@ -688,7 +690,7 @@ Additional fields are defined in the GNAP Token Introspection Response registry 
 The response MAY include any additional fields defined in an access
 token response and MUST NOT include the access token `value` itself.
 
-~~~
+~~~ http-message
 HTTP/1.1 200 OK
 Content-Type: application/json
 Cache-Control: no-store
@@ -749,7 +751,7 @@ Additional fields are defined in the GNAP Resource Set Registration Request regi
 The RS MUST identify itself with its own key and sign the
 request.
 
-~~~
+~~~ http-message
 POST /resource HTTP/1.1
 Host: server.example.com
 Content-Type: application/json
@@ -803,7 +805,7 @@ introspection_endpoint (string):
 
 Additional fields are defined in the GNAP Resource Set Registration Response Registry {{IANA-resource-registration-response}}.
 
-~~~
+~~~ http-message
 HTTP/1.1 200 OK
 Content-Type: application/json
 Cache-Control: no-store
@@ -858,7 +860,7 @@ status code and a JSON object consisting of a single `error` field, which is eit
 
 When returned as a string, the error value is the error code:
 
-~~~
+~~~ json
 {
     error: "invalid_access"
 }
@@ -876,7 +878,7 @@ When returned as an object, the error object contains the following fields:
     developer of the client.
     OPTIONAL.
 
-~~~
+~~~ json
 {
   "error": {
     "code": "invalid_access",
@@ -1265,7 +1267,7 @@ Specification document(s):
 
 # Security Considerations {#Security}
 
-In addition to the normative requirements in this document and in {{GNAP}}, implementors are
+In addition to the normative requirements in this document and in {{GNAP}}, implementers are
 strongly encouraged to consider these additional security considerations in implementations
 and deployments of GNAP.
 
@@ -1297,11 +1299,11 @@ If an RS validates only the presentation method as described in {{security-key-p
 token itself, an attacker could use a compromised key or a confused deputy to make arbitrary calls to the RS
 beyond what has been authorized by the RO.
 
-## Cacheing Token Validation Result {#security-token-cache}
+## Caching Token Validation Result {#security-token-cache}
 
 Since token validation can be an expensive process, requiring either cryptographic operations or network calls to an introspection
 service as described in {{introspection}}, an RS could cache the results of token validation for a particular token.
-The trade offs of using a cached validation for a token present an important decision space for implementors: relying on a cached validation result
+The trade offs of using a cached validation for a token present an important decision space for implementers: relying on a cached validation result
 increases performance and lowers processing overhead, but it comes at the expense of the liveness and accuracy of the information
 in the cache. While a cached value is in use at the RS, an attacker could present a revoked token and have it accepted by the RS.
 
