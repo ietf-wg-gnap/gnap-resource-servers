@@ -1,6 +1,6 @@
 ---
 title: 'Grant Negotiation and Authorization Protocol Resource Server Connections'
-docname: draft-ietf-gnap-resource-servers-05
+docname: draft-ietf-gnap-resource-servers-06
 category: std
 
 ipr: trust200902
@@ -62,8 +62,9 @@ informative:
 
 --- abstract
 
-GNAP defines a mechanism for delegating authorization to a
-piece of software, and conveying that delegation to the software.
+GNAP defines a mechanism for delegating authorization to a piece of
+software (the client), and conveying the results and artifacts of that delegation
+to the software.
 This extension defines methods for resource servers (RS) to connect
 with authorization servers (AS) in an interoperable fashion.
 
@@ -73,7 +74,7 @@ with authorization servers (AS) in an interoperable fashion.
 
 The core GNAP specification ({{GNAP}}) defines distinct roles for the authorization
 server (AS) and the resource server (RS). However, the core specification
-does not define how the RS answers important questions, such as whether
+does not define how the RS gets answers to important questions, such as whether
 a given access token is still valid or what set of access rights the access
 token is approved for.
 
@@ -86,7 +87,8 @@ RS's simultaneously.
 This specification defines a set of RS-facing APIs that an AS can make
 available for advanced loosely-coupled deployments. Additionally, this document
 defines a general-purpose model for access tokens, which can be used in
-structured, formatted access tokens or in the API. This specification also defines a method
+structured, formatted access tokens or in token introspection responses.
+This specification also defines a method
 for an RS to derive a downstream token for calling another chained RS.
 
 The means of the authorization server issuing
@@ -112,13 +114,18 @@ consistent across all GNAP systems.
 
 ## General-purpose Access Token Model
 
-Access tokens represent a common set of aspects across different GNAP deployments. This is not intended to be
-a universal or comprehensive list, but instead to provide guidance to implementors when developing
+The core GNAP specification {{GNAP}} focuses on the relationship between the client and the AS. Since the access token
+is opaque to the client, the core specification does not define a token model. However, the AS will need to create
+tokens and the RS will need to understand tokens. To facilitate a level of structural interoperability, a common
+access token model is presented here.
+Access tokens represent a common set of aspects across different GNAP deployments. This list is not intended to be
+universal or comprehensive, but rather serves as guidance to implementers in developing
 data structures and associated systems across a GNAP deployment. These data structures are communicated
-between the AS and RS either by using a structured token or an API-like mechanism like token introspection.
+between the AS and RS either by using a structured token or an API-like mechanism like token introspection (see {{introspection}}).
+
 This general-purpose data model does not assume either approach, and in fact both can be used together
-to convey different pieces of information. Where possible, mappings to concrete data fields in common standards
-understood by the RS are provided for each item in the model.
+to convey different pieces of information. Where possible, mappings to the {{JWT}} standard format
+are provided for each item in the model.
 
 ### Value
 
@@ -136,11 +143,15 @@ While the client software needs to be able to carry and present the access token
 value, the client software is never expected nor intended to be able to understand
 the token value itself.
 
+If structured tokens like {{JWT}} are used, the value of the token might not be stored by the AS. Instead,
+a token identifier can be used along with protection by an AS-generated signature to validate and
+identify an individual token.
+
 ### Issuer
 
-The access token is issued by the AS in a standard GNAP transaction. The AS will often
-need to identify itself in order to recognize tokens that it has issued, particularly
-in cases where tokens from multiple different AS's could be presented.
+The access token is issued by the AS as defined by {{GNAP}}. The AS will
+need to identify itself in order to allow an RS to recognize tokens that the AS has issued, particularly
+in cases where tokens from multiple different AS's could be presented to the same RS.
 
 This information is not usually conveyed directly to the client instance, since the client
 instance should know this information based on where it receives the token from.
@@ -149,8 +160,8 @@ In a {{JWT}} formatted token or a token introspection response, this corresponds
 
 ### Audience
 
-The access token is intended for use at one or more RS's. The AS can identify those RS's
-to allow each RS to ensure that the token is not receiving a token intended for someone else.
+The access token is intended for use at one or more RS's. The AS can list a token's intended RS's
+to allow each RS to ensure that the RS is not receiving a token intended for someone else.
 The AS and RS have to agree on the nature of any audience identifiers represented by the token,
 but the URIs of the RS are a common pattern.
 
@@ -166,12 +177,12 @@ possible RS's to present the token to.
 Access tokens in GNAP are bound to the client instance's registered or presented key, except in
 cases where the access token is a bearer token. For all tokens bound to a key, the AS and RS need to
 be able to identify which key the token is bound to, otherwise an attacker could substitute their
-own key during presentation of the token. In the case of an asymmetric algorithm, the model for the
-AS and RS need only contain the public key, while the client instance will also need to know the private
+own key during presentation of the token. In the case of an asymmetric algorithm, the
+AS and RS needs to know only the public key, while the client instance will also need to know the private
 key in order to present the token. In the case of a symmetric algorithm, all parties
 will need to either know or be able to derive the shared key.
 
-The source of this key information can vary depending on circumstance and deployment. For example, an AS
+The source of this key information can vary depending on deployment decisions. For example, an AS
 could decide that all tokens issued to a client instance are always bound to that client instance's current key.
 When the key needs to be dereferenced, the AS looks up the client instance to which the token was issued
 and finds the key information there.
@@ -181,7 +192,7 @@ instance to use a different key for each request, or allows the AS to issue a ke
 to use with the particular token.
 
 In all cases, the key binding also includes a proofing mechanism, along with any parameters needed for that
-mechanism such as a signing or digest algorithm. If such information is not stored, an attacker could
+mechanism such as a signing or digest algorithm. If such information is not included with the proofing key, an attacker could
 present a token with a seemingly-valid key using an insecure and incorrect proofing mechanism.
 
 This value is conveyed to the client instance in the `key` field of the `access_token` response in {{Section 3.2 of GNAP}}.
@@ -199,9 +210,9 @@ GNAP access tokens can have multiple data flags associated with them that indica
 processing or considerations for the token. For example, whether the token is a bearer token,
 or should be expected to be durable across grant updates.
 
-The client can request a set of flags in the `access_token` request in {{GNAP}}.
+The client can request a set of flags using the `flags` field of the `access_token` grant request parameter in {{Section 2.1.1 of GNAP}}.
 
-These flags are conveyed from the AS to the client in the `flags` field of the `access_token` response in {{Section 3.2 of GNAP}}.
+These flags are conveyed from the AS to the client in the `flags` field of the `access_token` section of the grant response response in {{Section 3.2 of GNAP}}.
 
 For token introspection, flags are returned in the `flags` field of the response.
 
@@ -598,7 +609,7 @@ access (array of strings/objects):
 
 Additional fields are defined in the GNAP Token Introspection Request registry {{IANA-token-introspection-request}}.
 
-~~~
+~~~ http-message
 POST /introspect HTTP/1.1
 Host: server.example.com
 Content-Type: application/json
@@ -619,14 +630,14 @@ and the AS MUST take all provided parameters into account when evaluating if the
 If the AS is unable to process part of the request, such as not understanding part of
 the `access` field presented, the AS MUST NOT indicate the token as active.
 
-An active access token is defined as a token that
+An active access token is defined as a token that is all of the following:
 
 - was issued by the processing AS,
 - has not been revoked,
 - has not expired,
 - is bound using the `proof` method indicated,
 - is appropriate for presentation at the identified RS, and
-- is appropriate for the `access` indicated (if present),
+- is appropriate for the `access` indicated (if present).
 
 The AS responds with a data structure describing the token's
 current state and any information the RS would need to validate the
@@ -688,7 +699,7 @@ Additional fields are defined in the GNAP Token Introspection Response registry 
 The response MAY include any additional fields defined in an access
 token response and MUST NOT include the access token `value` itself.
 
-~~~
+~~~ http-message
 HTTP/1.1 200 OK
 Content-Type: application/json
 Cache-Control: no-store
@@ -749,7 +760,7 @@ Additional fields are defined in the GNAP Resource Set Registration Request regi
 The RS MUST identify itself with its own key and sign the
 request.
 
-~~~
+~~~ http-message
 POST /resource HTTP/1.1
 Host: server.example.com
 Content-Type: application/json
@@ -803,7 +814,7 @@ introspection_endpoint (string):
 
 Additional fields are defined in the GNAP Resource Set Registration Response Registry {{IANA-resource-registration-response}}.
 
-~~~
+~~~ http-message
 HTTP/1.1 200 OK
 Content-Type: application/json
 Cache-Control: no-store
@@ -858,7 +869,7 @@ status code and a JSON object consisting of a single `error` field, which is eit
 
 When returned as a string, the error value is the error code:
 
-~~~
+~~~ json
 {
     error: "invalid_access"
 }
@@ -876,7 +887,7 @@ When returned as an object, the error object contains the following fields:
     developer of the client.
     OPTIONAL.
 
-~~~
+~~~ json
 {
   "error": {
     "code": "invalid_access",
@@ -995,30 +1006,6 @@ The AS responds with a token for the downstream RS2 as described in
 repeat this process as necessary for calling further RS's.
 
 
-# Acknowledgements {#Acknowledgements}
-
-The editors would like to thank the feedback of the following individuals for their reviews,
-implementations, and contributions:
-Aaron Parecki,
-Adrian Gropper,
-Andrii Deinega,
-Annabelle Backman,
-Dmitry Barinov,
-Fabien Imbault,
-Florian Helmschmidt,
-George Fletcher,
-Justin Richer,
-Kathleen Moriarty,
-Leif Johansson,
-Mike Varley,
-Nat Sakimura,
-Takahiko Kawasaki,
-Yaron Sheffer.
-
-Finally, the editors want to acknowledge the immense contributions of Aaron Parecki to the content
-of this document. We thank him for his insight, input, and hard work, without which GNAP would
-not have grown to what it is.
-
 # IANA Considerations {#IANA}
 
 IANA is requested to add values to existing registries and to create 5 registries in the Grant Negotiation and Authorization Protocol registry.
@@ -1056,9 +1043,11 @@ Specification document(s):
 
 This document defines a GNAP token format, for which IANA is asked to create and maintain a new registry titled "GNAP Token Formats". Initial values for this registry are given in {{IANA-token-format-contents}}. Future assignments and modifications to existing assignment are to be made through the Specification Required registration policy {{?RFC8126}}.
 
-The Designated Expert (DE) is expected to ensure that all registrations follow the template presented in {{IANA-token-format-template}}.
-The DE is expected to ensure that the format's definition is sufficiently unique from other formats provided by existing parameters.
-The DE is expected to ensure that the format's definition specifies the format of the access token in sufficient detail to allow for the AS and RS to be able to communicate the token information.
+The Designated Expert (DE) is expected to ensure that:
+
+- all registrations follow the template presented in {{IANA-token-format-template}}.
+- the format's definition is sufficiently unique from other formats provided by existing parameters.
+- the format's definition specifies the format of the access token in sufficient detail to allow for the AS and RS to be able to communicate the token information.
 
 ### Registry Template {#IANA-token-format-template}
 
@@ -1083,14 +1072,17 @@ Reference
 |`macaroon`|Active   | Macaroon | {{MACAROON}} |
 |`biscuit`|Active   | Biscuit | {{BISCUIT}} |
 |`zcap`|Active   | ZCAP | {{ZCAPLD}} |
+{: title="Initial contents of the GNAP Token Formats Registry." }
 
 ## GNAP Token Introspection Request Registry {#IANA-token-introspection-request}
 
 This document defines GNAP token introspection, for which IANA is asked to create and maintain a new registry titled "GNAP Token Introspection Request". Initial values for this registry are given in {{IANA-token-introspection-request-contents}}. Future assignments and modifications to existing assignment are to be made through the Specification Required registration policy {{?RFC8126}}.
 
-The Designated Expert (DE) is expected to ensure that all registrations follow the template presented in {{IANA-token-introspection-request-template}}.
-The DE is expected to ensure that the claim's definition is sufficiently orthogonal to other claims defined in the registry so as avoid overlapping functionality.
-The DE is expected to ensure that the claim's definition specifies the syntax and semantics of the claim in sufficient detail to allow for the AS and RS to be able to communicate the token values.
+The Designated Expert (DE) is expected to ensure that:
+
+- all registrations follow the template presented in {{IANA-token-introspection-request-template}}.
+- the claim's definition is sufficiently orthogonal to other claims defined in the registry so as avoid overlapping functionality.
+- the claim's definition specifies the syntax and semantics of the claim in sufficient detail to allow for the AS and RS to be able to communicate the token values.
 
 ### Registry Template {#IANA-token-introspection-request-template}
 
@@ -1112,14 +1104,17 @@ The table below contains the initial contents of the GNAP Token Introspection Re
 |proof|string| {{introspection}} of {{&SELF}}|
 |resource_server|object/string|  {{introspection}} of {{&SELF}}|
 |access|array of strings/objects| {{introspection}} of {{&SELF}}|
+{: title="Initial contents of the GNAP Token Introspection Request Registry." }
 
 ## GNAP Token Introspection Response Registry {#IANA-token-introspection}
 
 This document defines GNAP token introspection, for which IANA is asked to create and maintain a new registry titled "GNAP Token Introspection Response". Initial values for this registry are given in {{IANA-token-introspection-contents}}. Future assignments and modifications to existing assignment are to be made through the Specification Required registration policy {{?RFC8126}}.
 
-The Designated Expert (DE) is expected to ensure that all registrations follow the template presented in {{IANA-token-introspection-template}}.
-The DE is expected to ensure that the claim's definition is sufficiently orthogonal to other claims defined in the registry so as avoid overlapping functionality.
-The DE is expected to ensure that the claim's definition specifies the syntax and semantics of the claim in sufficient detail to allow for the AS and RS to be able to communicate the token values.
+The Designated Expert (DE) is expected to ensure that:
+
+- all registrations follow the template presented in {{IANA-token-introspection-template}}.
+- the claim's definition is sufficiently orthogonal to other claims defined in the registry so as avoid overlapping functionality.
+- the claim's definition specifies the syntax and semantics of the claim in sufficient detail to allow for the AS and RS to be able to communicate the token values.
 
 ### Registry Template {#IANA-token-introspection-template}
 
@@ -1148,14 +1143,17 @@ The table below contains the initial contents of the GNAP Token Introspection Re
 |sub|string| {{introspection}} of {{&SELF}}|
 |iss|string| {{introspection}} of {{&SELF}}|
 |instance_id|string| {{introspection}} of {{&SELF}}|
+{: title="Initial contents of the GNAP Token Introspection Response Registry." }
 
-## GNAP Resource Set Registration Request Parameters {#IANA-resource-registration-request}
+## GNAP Resource Set Registration Request Parameters Registry {#IANA-resource-registration-request}
 
 This document defines a means to register a resource set for a GNAP AS, for which IANA is asked to create and maintain a new registry titled "GNAP Resource Set Registration Request Parameters". Initial values for this registry are given in {{IANA-resource-registration-request-contents}}. Future assignments and modifications to existing assignment are to be made through the Expert Review registration policy {{?RFC8126}}.
 
-The Designated Expert (DE) is expected to ensure that all registrations follow the template presented in {{IANA-resource-registration-request-template}}.
-The DE is expected to ensure that the parameter's definition is sufficiently orthogonal to other claims defined in the registry so as avoid overlapping functionality.
-The DE is expected to ensure that the parameter's definition specifies the syntax and semantics of the claim in sufficient detail to allow for the AS and RS to be able to communicate the resource set.
+The Designated Expert (DE) is expected to ensure that:
+
+- all registrations follow the template presented in {{IANA-resource-registration-request-template}}.
+- the parameter's definition is sufficiently orthogonal to other claims defined in the registry so as avoid overlapping functionality.
+- the parameter's definition specifies the syntax and semantics of the claim in sufficient detail to allow for the AS and RS to be able to communicate the resource set.
 
 ### Registry Template {#IANA-resource-registration-request-template}
 
@@ -1177,14 +1175,17 @@ The table below contains the initial contents of the GNAP Resource Set Registrat
 |resource_server| string or object| {{rs-register-resource-handle}} of {{&SELF}}|
 |token_formats_supported|string| {{rs-register-resource-handle}} of {{&SELF}}|
 |token_introspection_required|boolean| {{rs-register-resource-handle}} of {{&SELF}}|
+{: title="Initial contents of the GNAP Resource Set Registration Request Parameters Registry." }
 
 ## GNAP Resource Set Registration Response Parameters {#IANA-resource-registration-response}
 
 This document defines a means to register a resource set for a GNAP AS, for which IANA is asked to create and maintain a new registry titled "GNAP Resource Set Registration Response Parameters". Initial values for this registry are given in {{IANA-resource-registration-response-contents}}. Future assignments and modifications to existing assignment are to be made through the Expert Review registration policy {{?RFC8126}}.
 
-The Designated Expert (DE) is expected to ensure that all registrations follow the template presented in {{IANA-resource-registration-response-template}}.
-The DE is expected to ensure that the parameter's definition is sufficiently orthogonal to other claims defined in the registry so as avoid overlapping functionality.
-The DE is expected to ensure that the parameter's definition specifies the syntax and semantics of the claim in sufficient detail to allow for the AS and RS to be able to communicate the resource set.
+The Designated Expert (DE) is expected to ensure that:
+
+- all registrations follow the template presented in {{IANA-resource-registration-response-template}}.
+- the parameter's definition is sufficiently orthogonal to other claims defined in the registry so as avoid overlapping functionality.
+- the parameter's definition specifies the syntax and semantics of the claim in sufficient detail to allow for the AS and RS to be able to communicate the resource set.
 
 ### Registry Template {#IANA-resource-registration-response-template}
 
@@ -1205,14 +1206,17 @@ The table below contains the initial contents of the GNAP Resource Set Registrat
 |resource_reference|string| {{rs-register-resource-handle}} of {{&SELF}}|
 |instance_id| string| {{rs-register-resource-handle}} of {{&SELF}}|
 |introspection_endpoint|string| {{rs-register-resource-handle}} of {{&SELF}}|
+{: title="Initial contents of the GNAP Resource Set Registration Response Parameters Registry." }
 
 ## GNAP RS-Facing Discovery Document Fields {#IANA-rs-discovery}
 
 This document defines a means to for a GNAP AS to be discovered by a GNAP RS, for which IANA is asked to create and maintain a new registry titled "GNAP RS-Facing Discovery Document Fields". Initial values for this registry are given in {{IANA-rs-discovery-contents}}. Future assignments and modifications to existing assignment are to be made through the Expert Review registration policy {{?RFC8126}}.
 
-The Designated Expert (DE) is expected to ensure that all registrations follow the template presented in {{IANA-rs-discovery-template}}.
-The DE is expected to ensure that the claim's definition is sufficiently orthogonal to other claims defined in the registry so as avoid overlapping functionality.
-The DE is expected to ensure that the claim's definition specifies the syntax and semantics of the claim in sufficient detail to allow for RS to be able to communicate with the AS.
+The Designated Expert (DE) is expected to ensure that:
+
+- all registrations follow the template presented in {{IANA-rs-discovery-template}}.
+- the claim's definition is sufficiently orthogonal to other claims defined in the registry so as avoid overlapping functionality.
+- the claim's definition specifies the syntax and semantics of the claim in sufficient detail to allow for RS to be able to communicate with the AS.
 
 ### Registry Template {#IANA-rs-discovery-template}
 
@@ -1235,14 +1239,17 @@ The table below contains the initial contents of the GNAP RS-Facing Discovery Re
 |resource_registration_endpoint|string| {{discovery}} of {{&SELF}}|
 |grant_request_endpoint|string| {{discovery}} of {{&SELF}}|
 |key_proofs_supported|array of strings| {{discovery}} of {{&SELF}}|
+{: title="Initial contents of the GNAP RS-Facing Discovery Document Fields Registry." }
 
 ## GNAP RS-Facing Error Codes {#IANA-error-code}
 
 This document defines a set of errors that the AS can return to the RS, for which IANA is asked to create and maintain a new registry titled "GNAP RS-Facing Error Codes". Initial values for this registry are given in {{IANA-error-code-contents}}. Future assignments and modifications to existing assignment are to be made through the Specification Required registration policy {{?RFC8126}}.
 
-The DE is expected to ensure that all registrations follow the template presented in {{IANA-error-code-template}}.
-The DE is expected to ensure that the error response is sufficiently unique from other errors to provide actionable information to the client instance.
-The DE is expected to ensure that the definition of the error response specifies all conditions in which the error response is returned, and what the client instance's expected action is.
+The DE is expected to ensure that:
+
+- all registrations follow the template presented in {{IANA-error-code-template}}.
+- the error response is sufficiently unique from other errors to provide actionable information to the client instance.
+- the definition of the error response specifies all conditions in which the error response is returned, and what the client instance's expected action is.
 
 ### Registration Template {#IANA-error-code-template}
 
@@ -1262,10 +1269,11 @@ Specification document(s):
 |invalid_request|{{response-error}} of {{&SELF}}|
 |invalid_resource_server|{{response-error}} of {{&SELF}}|
 |invalid_access|{{response-error}} of {{&SELF}}|
+{: title="Initial contents of the GNAP RS-Facing Error Codes Registry." }
 
 # Security Considerations {#Security}
 
-In addition to the normative requirements in this document and in {{GNAP}}, implementors are
+In addition to the normative requirements in this document and in {{GNAP}}, implementers are
 strongly encouraged to consider these additional security considerations in implementations
 and deployments of GNAP.
 
@@ -1297,11 +1305,11 @@ If an RS validates only the presentation method as described in {{security-key-p
 token itself, an attacker could use a compromised key or a confused deputy to make arbitrary calls to the RS
 beyond what has been authorized by the RO.
 
-## Cacheing Token Validation Result {#security-token-cache}
+## Caching Token Validation Result {#security-token-cache}
 
 Since token validation can be an expensive process, requiring either cryptographic operations or network calls to an introspection
 service as described in {{introspection}}, an RS could cache the results of token validation for a particular token.
-The trade offs of using a cached validation for a token present an important decision space for implementors: relying on a cached validation result
+The trade offs of using a cached validation for a token present an important decision space for implementers: relying on a cached validation result
 increases performance and lowers processing overhead, but it comes at the expense of the liveness and accuracy of the information
 in the cache. While a cached value is in use at the RS, an attacker could present a revoked token and have it accepted by the RS.
 
@@ -1438,10 +1446,13 @@ The contents of the access token could potentially contain personal information 
 This is true whether the contents are parsed from the token itself or sent in an introspection response.
 
 While an RS will sometimes need this information for processing, it's often the case that an RS is exposed to these
-details only in passing, and not intentionally. For example, disclosure of a medical record number in the contents
-of an access token usable for both medial and non-medical APIs.
+details only in passing, and not intentionally. For example, consider a client that is issued an access token that is
+usable for both medical and non-medical APIs. If this access token contains a medical record number to facilitate the
+RS serving the medical API, then any RS for a non-medical API would also learn the user's medical record number
+in the process, even though that API has no need to make such a correlation.
 
-To mitigate this, the a limited token introspection response can be used, as defined in {{introspection}}.
+To mitigate this, a formatted token could contain separate sections targeted to different RS's to segregate data.
+Alternatively, token introspection can be used to limit the data returned to each RS, as defined in {{introspection}}.
 
 ## Token Use Disclosure through Introspection
 
@@ -1458,9 +1469,36 @@ if a medical record is protected by a personal AS, an untrusted client could cal
 of the AS protecting the record. Since the AS is tied strongly to a single RO, the untrusted and unauthorized client
 software can gain information about the resource being protected without accessing the record itself.
 
+# Acknowledgements {#Acknowledgements}
+
+The editors would like to thank the feedback of the following individuals for their reviews,
+implementations, and contributions:
+Aaron Parecki,
+Adrian Gropper,
+Andrii Deinega,
+Annabelle Backman,
+Dmitry Barinov,
+Fabien Imbault,
+Florian Helmschmidt,
+George Fletcher,
+Justin Richer,
+Kathleen Moriarty,
+Leif Johansson,
+Mike Varley,
+Nat Sakimura,
+Takahiko Kawasaki,
+Yaron Sheffer.
+
+Finally, the editors want to acknowledge the immense contributions of Aaron Parecki to the content
+of this document. We thank him for his insight, input, and hard work, without which GNAP would
+not have grown to what it is.
+
 --- back
 
 # Document History {#history}
+
+- -06
+    - Editorial updates based on review feedback.
 
 - -05
     - Added discussion of access tokens used to call the RS-facing AS APIs.
