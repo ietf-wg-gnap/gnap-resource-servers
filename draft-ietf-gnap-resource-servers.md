@@ -129,7 +129,10 @@ are provided for each item in the model.
 
 ### Value
 
-All access tokens have a unique value. This is the string that is passed on the wire between parties.
+All access tokens have a _value_, which is the string that is passed on the wire between parties.
+In order for different access tokens to be differentiated at runtime, the value of a token needs to be unique
+within a security domain (such as all systems controlled by an AS). Otherwise, two separate tokens would be
+confused for each other which would lead to security issues.
 The AS chooses the value, which can be structured as in {{token-format}} or unstructured. When the token is
 structured, the token value also has a _format_ known to the AS and RS, and the other items
 in this token model are contained within the token's value in some fashion.
@@ -212,7 +215,7 @@ or should be expected to be durable across grant updates.
 
 The client can request a set of flags using the `flags` field of the `access_token` grant request parameter in {{Section 2.1.1 of GNAP}}.
 
-These flags are conveyed from the AS to the client in the `flags` field of the `access_token` section of the grant response response in {{Section 3.2 of GNAP}}.
+These flags are conveyed from the AS to the client in the `flags` field of the `access_token` section of the grant response in {{Section 3.2 of GNAP}}.
 
 For token introspection, flags are returned in the `flags` field of the response.
 
@@ -672,15 +675,15 @@ flags (array of strings):
 
 exp (integer):
 : OPTIONAL. The timestamp after which this token is no longer valid.
-    Expressed as a integer seconds from UNIX Epoch.
+    Expressed as integer seconds from UNIX Epoch.
 
 iat (integer):
 : OPTIONAL. The timestamp at which this token was issued by the AS.
-    Expressed as a integer seconds from UNIX Epoch.
+    Expressed as integer seconds from UNIX Epoch.
 
 nbf (integer):
 : OPTIONAL. The timestamp before which this token is not valid.
-    Expressed as a integer seconds from UNIX Epoch.
+    Expressed as integer seconds from UNIX Epoch.
 
 aud (string or array of strings):
 : OPTIONAL. Identifiers for the resource servers this token can be accepted at.
@@ -1365,7 +1368,7 @@ It's likely that every RS does not need to know all details of the token model, 
 a single access token is usable across multiple RS's. An attacker could use this to gain information about
 the larger system by compromising only one RS. By limiting the information available to only
 that which is relevant to a specific RS, such as using a limited introspection reply as defined in {{introspection}},
-a system can follow a principle of least disclosure to each RS.
+a system can follow the principle of least disclosure to each RS.
 
 ## Resource References
 
