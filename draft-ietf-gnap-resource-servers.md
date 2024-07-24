@@ -1,6 +1,6 @@
 ---
 title: 'Grant Negotiation and Authorization Protocol Resource Server Connections'
-docname: draft-ietf-gnap-resource-servers-06
+docname: draft-ietf-gnap-resource-servers-07
 category: std
 
 ipr: trust200902
@@ -1499,6 +1499,9 @@ not have grown to what it is.
 --- back
 
 # Document History {#history}
+
+- -07
+    - Editorial updates based on review feedback.
 
 - -06
     - Editorial updates based on review feedback.
