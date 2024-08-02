@@ -427,7 +427,7 @@ values in the GNAP Token Formats Registry {{IANA-token-format}}.
 
 # Resource-Server-Facing API {#rs-facing-api}
 
-To facilitate runtime and dynamic connections, the AS can offer an
+To facilitate runtime and dynamic connections with an RS, the AS can offer an
 RS-Facing API consisting of one or more of the following optional
 pieces.
 
@@ -480,7 +480,7 @@ key_proofs_supported (array of strings)
 : A list of the AS's supported key
     proofing mechanisms. The values of this list correspond to possible
     values of the `proof` field of the key section of the request.
-    Values MUST be in the GNAP Key Proofing Methods registry.
+    Values MUST be in the GNAP Key Proofing Methods registry established by {{GNAP}}.
     OPTIONAL.
 
 Additional fields are defined in the GNAP RS-Facing Discovery Document Fields registry {{IANA-rs-discovery}}.
@@ -1039,10 +1039,10 @@ Name:
 Type:
 : string
 
-Specification document(s):
+Reference:
 : {{token-chaining}} of {{&SELF}}
 
-## GNAP Token Formats Registry {#IANA-token-format}
+## GNAP Token Formats {#IANA-token-format}
 
 This document defines a GNAP token format, for which IANA is asked to create and maintain a new registry titled "GNAP Token Formats". Initial values for this registry are given in {{IANA-token-format-contents}}. Future assignments and modifications to existing assignment are to be made through the Specification Required registration policy {{?RFC8126}}.
 
@@ -1077,7 +1077,7 @@ Reference
 |`zcap`|Active   | ZCAP | {{ZCAPLD}} |
 {: title="Initial contents of the GNAP Token Formats Registry." }
 
-## GNAP Token Introspection Request Registry {#IANA-token-introspection-request}
+## GNAP Token Introspection Request {#IANA-token-introspection-request}
 
 This document defines GNAP token introspection, for which IANA is asked to create and maintain a new registry titled "GNAP Token Introspection Request". Initial values for this registry are given in {{IANA-token-introspection-request-contents}}. Future assignments and modifications to existing assignment are to be made through the Specification Required registration policy {{?RFC8126}}.
 
@@ -1096,7 +1096,7 @@ Type
 : The JSON data type of the claim value.
 
 Reference
-: The specification that defines the token.
+: The specification that defines the claim.
 
 ### Initial Registry Contents {#IANA-token-introspection-request-contents}
 
@@ -1109,7 +1109,7 @@ The table below contains the initial contents of the GNAP Token Introspection Re
 |access|array of strings/objects| {{introspection}} of {{&SELF}}|
 {: title="Initial contents of the GNAP Token Introspection Request Registry." }
 
-## GNAP Token Introspection Response Registry {#IANA-token-introspection}
+## GNAP Token Introspection Response {#IANA-token-introspection}
 
 This document defines GNAP token introspection, for which IANA is asked to create and maintain a new registry titled "GNAP Token Introspection Response". Initial values for this registry are given in {{IANA-token-introspection-contents}}. Future assignments and modifications to existing assignment are to be made through the Specification Required registration policy {{?RFC8126}}.
 
@@ -1128,7 +1128,7 @@ Type
 : The JSON data type of the claim value.
 
 Reference
-: The specification that defines the token.
+: The specification that defines the claim.
 
 ### Initial Registry Contents {#IANA-token-introspection-contents}
 
@@ -1148,15 +1148,15 @@ The table below contains the initial contents of the GNAP Token Introspection Re
 |instance_id|string| {{introspection}} of {{&SELF}}|
 {: title="Initial contents of the GNAP Token Introspection Response Registry." }
 
-## GNAP Resource Set Registration Request Parameters Registry {#IANA-resource-registration-request}
+## GNAP Resource Set Registration Request Parameters {#IANA-resource-registration-request}
 
 This document defines a means to register a resource set for a GNAP AS, for which IANA is asked to create and maintain a new registry titled "GNAP Resource Set Registration Request Parameters". Initial values for this registry are given in {{IANA-resource-registration-request-contents}}. Future assignments and modifications to existing assignment are to be made through the Expert Review registration policy {{?RFC8126}}.
 
 The Designated Expert (DE) is expected to ensure that:
 
 - all registrations follow the template presented in {{IANA-resource-registration-request-template}}.
-- the parameter's definition is sufficiently orthogonal to other claims defined in the registry so as avoid overlapping functionality.
-- the parameter's definition specifies the syntax and semantics of the claim in sufficient detail to allow for the AS and RS to be able to communicate the resource set.
+- the parameter's definition is sufficiently orthogonal to other parameters defined in the registry so as avoid overlapping functionality.
+- the parameter's definition specifies the syntax and semantics of the parameter in sufficient detail to allow for the AS and RS to be able to communicate the resource set.
 
 ### Registry Template {#IANA-resource-registration-request-template}
 
@@ -1199,7 +1199,7 @@ Type
 : The JSON data type of the parameter value.
 
 Reference
-: The specification that defines the token.
+: The specification that defines the parameter.
 
 ### Initial Registry Contents {#IANA-resource-registration-response-contents}
 
@@ -1218,19 +1218,19 @@ This document defines a means to for a GNAP AS to be discovered by a GNAP RS, fo
 The Designated Expert (DE) is expected to ensure that:
 
 - all registrations follow the template presented in {{IANA-rs-discovery-template}}.
-- the claim's definition is sufficiently orthogonal to other claims defined in the registry so as avoid overlapping functionality.
-- the claim's definition specifies the syntax and semantics of the claim in sufficient detail to allow for RS to be able to communicate with the AS.
+- the field's definition is sufficiently orthogonal to other fields defined in the registry so as avoid overlapping functionality.
+- the field's definition specifies the syntax and semantics of the fields in sufficient detail to allow for RS to be able to communicate with the AS.
 
 ### Registry Template {#IANA-rs-discovery-template}
 
 Name
-: The name of the parameter.
+: The name of the field.
 
 Type
-: The JSON data type of the parameter value.
+: The JSON data type of the field value.
 
 Reference
-: The specification that defines the token.
+: The specification that defines the field.
 
 ### Initial Registry Contents {#IANA-rs-discovery-contents}
 
@@ -1298,9 +1298,8 @@ The RS needs to validate that a token:
 
 - Is intended for this RS (audience restriction)
 - Is presented using the appropriate key for the token (see also {{security-key-proof}})
-    Subject identification (the RS knows who authorized the token)
-    Issuer restriction (the RS knows who created the token, including signing a structure or providing introspection to prove this)
-
+- Identifies an appropriate subject to access the resource (usually this is the resource owner who authorized the token's issuance)
+- Is issued by a trusted AS for this resource
 
 Even though key proofing mechanisms have to cover the value of the token, validating the key proofing alone
 is not sufficient to protect a request to an RS.
@@ -1499,6 +1498,9 @@ not have grown to what it is.
 --- back
 
 # Document History {#history}
+
+- -08
+    - Editorial and IANA updates based on review feedback.
 
 - -07
     - Editorial updates based on review feedback.
