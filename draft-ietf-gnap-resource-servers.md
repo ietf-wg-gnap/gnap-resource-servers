@@ -1,6 +1,6 @@
 ---
 title: 'Grant Negotiation and Authorization Protocol Resource Server Connections'
-docname: draft-ietf-gnap-resource-servers-07
+docname: draft-ietf-gnap-resource-servers-09
 category: std
 
 ipr: trust200902
@@ -438,9 +438,10 @@ pieces.
 
 ## RS-facing AS Discovery {#discovery}
 
-A GNAP AS offering RS-facing services can publish its features on
-a well-known discovery document using the URL `.well-known/gnap-as-rs` appended
-to the grant request endpoint URL.
+A GNAP AS offering RS-facing services can publish its features
+on a well-known discovery document at the URL with the same
+schema and authority as the grant request endpoint URL, at
+the path `/.well-known/gnap-as-rs`. 
 
 The discovery response is a JSON document {{RFC8259}} consisting of a single JSON
 object with the following fields:
@@ -1498,6 +1499,9 @@ not have grown to what it is.
 --- back
 
 # Document History {#history}
+
+- -09
+    - Updated description of well-known discovery endpoint.
 
 - -08
     - Editorial and IANA updates based on review feedback.
