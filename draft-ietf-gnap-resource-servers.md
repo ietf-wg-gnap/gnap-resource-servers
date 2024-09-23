@@ -441,7 +441,7 @@ pieces.
 A GNAP AS offering RS-facing services can publish its features
 on a well-known discovery document at the URL with the same
 schema and authority as the grant request endpoint URL, at
-the path `/.well-known/gnap-as-rs`. 
+the path `/.well-known/gnap-as-rs`.
 
 The discovery response is a JSON document {{RFC8259}} consisting of a single JSON
 object with the following fields:
